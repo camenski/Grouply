@@ -1,0 +1,93 @@
+{
+  "users": [
+    {
+      "id": 1,
+      "email": "alice@example.com",
+      "hashed_password": "$2b$12$W5GFk/D6LFRWV6Z/8wdLWON3E2y4/A2MuPLhdlkt0F4NZ/ohrtpmy",
+      "full_name": "Alice"
+    },
+    {
+      "id": 2,
+      "email": "bob@example.com",
+      "hashed_password": "$2b$12$YXj.pbrYHC1qEKr46dwDvOPTu23.q6NNiUOYGNVd/uRqKZR9.aCTq",
+      "full_name": "Bob"
+    },
+    {
+      "id": 3,
+      "email": "carol@example.com",
+      "hashed_password": "$2b$12$rC/4OvA3GyluZRb.5KJjzuuuU8KJ6I/YJQiX7TOYy5VSjGxk07.iO",
+      "full_name": "Carol"
+    },
+    {
+      "email": "moko@example.com",
+      "hashed_password": "$2b$12$qyTVYYtQyPfwlVYEZU6II.KnZWgqncXJFDXjWN/nNiE5ePeuGXC0G",
+      "full_name": "moko",
+      "is_active": true,
+      "id": 4
+    }
+  ],
+  "groups": [
+    {
+      "id": 1,
+      "name": "Groupe de test",
+      "description": "Groupe initial",
+      "owner_id": 1,
+      "members": [
+        1,
+        2
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Admins",
+      "description": "Groupe des administrateurs",
+      "owner_id": 2,
+      "members": [
+        2
+      ]
+    }
+  ],
+  "tasks": [
+    {
+      "id": 1,
+      "title": "Préparer la démo",
+      "description": "Rédiger slides et préparer la démo technique",
+      "status": "in_progress",
+      "assigned_to_id": 1,
+      "group_id": 1,
+      "due_date": "2025-12-02T14:20:26.448924",
+      "created_at": "2025-11-25T14:20:26.449668",
+      "updated_at": "2025-11-25T14:20:26.449673"
+    },
+    {
+      "id": 2,
+      "title": "Nettoyer la base",
+      "description": "Supprimer les données de test obsolètes",
+      "status": "todo",
+      "assigned_to_id": 2,
+      "group_id": null,
+      "due_date": null,
+      "created_at": "2025-11-25T14:20:26.449678",
+      "updated_at": "2025-11-25T14:20:26.449680"
+    }
+  ],
+  "invites": [
+    {
+      "id": 1,
+      "token": "X8InieCmb7zvTDNaOWzdCR_8jp_ae4DLoUsc9iPnQYg",
+      "group_id": 1,
+      "created_by": 1,
+      "expires_at": "2025-12-02T14:20:26.465048",
+      "max_uses": 1,
+      "uses": 0,
+      "revoked": false,
+      "created_at": "2025-11-25T14:20:26.465064"
+    }
+  ],
+  "next_ids": {
+    "users": 4,
+    "groups": 3,
+    "tasks": 3,
+    "invites": 2
+  }
+}
