@@ -4,25 +4,40 @@ from app.core.security import decoder_access_token
 from app.services.auth import recuperer_profil
 
 async def get_token_from_request(request: Request) -> Optional[str]:
+
     token = request.cookies.get("access_token")
     if token:
         return token
-    auth = request.headers.get("Authorization")
+
+    auth = request.headers.get("authorization")
     if auth and auth.lower().startswith("bearer "):
-        return auth.split(" ", 1)[1].strip()
+        return auth.split(" ", 1)[1]
+
     return None
 
 async def get_current_user(request: Request) -> Dict[str, Any]:
     token = await get_token_from_request(request)
+    print("DEBUG token:", token)
     if not token:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Non authentifié")
+
     try:
         payload = decoder_access_token(token) 
-        sub = payload.get("sub")
-        if sub is None:
-            raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide: 'sub' manquant")
-        user_id = int(sub)
-    except Exception:
+    except Exception as e:
+        print("DEBUG token decode error:", e)
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
+
+    sub = payload.get("sub")
+    if sub is None:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide: 'sub' manquant")
+
+    try:
+        user_id = int(sub)
+    except (TypeError, ValueError):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiant utilisateur invalide dans le token")
+
     user = await recuperer_profil(user_id)
+    if not user:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable")
+
     return user

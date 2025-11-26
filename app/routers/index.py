@@ -12,7 +12,7 @@ from app.dependencies.auth import get_current_user
 
 router = APIRouter(prefix="/index", tags=["index"])
 BASE_DIR = Path(__file__).resolve().parent.parent
-templates = Jinja2Templates(directory=str(BASE_DIR / "templates"))
+templates = Jinja2Templates(directory="templates")
 
 @router.get("/", include_in_schema=False)
 async def index(request: Request, current_user: dict = Depends(get_current_user)):

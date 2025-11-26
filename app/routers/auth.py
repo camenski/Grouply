@@ -49,10 +49,20 @@ async def login_form(request: Request, email: str = Form(...), password: str = F
     if not token:
         return templates.TemplateResponse("login.html", {"request": request, "message": "Erreur d'authentification : token manquant."})
 
-    token_str: str = str(token) 
-    response = RedirectResponse(url="/", status_code=303)
-    response.set_cookie("access_token", token_str, httponly=True, max_age=COOKIE_MAX_AGE, samesite="lax")
+    token_str: str = str(token)
+
+    response = RedirectResponse(url="/index", status_code=303)
+    response.set_cookie(
+        key="access_token",
+        value=token_str,
+        httponly=True,
+        max_age=COOKIE_MAX_AGE,
+        path="/",
+        samesite="lax",  
+        secure=False    
+    )
     return response
+
 
 
 @router.post("/login/oauth", response_model=TokenOut)

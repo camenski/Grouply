@@ -11,7 +11,7 @@ from app.services.groupe import (
     ajouter_membre_au_groupe,
     retirer_membre_du_groupe,
 )
-from app.core.security import get_current_user
+from app.dependencies.auth import get_current_user
 
 router = APIRouter(prefix="/groups", tags=["groups"])
 
@@ -24,6 +24,9 @@ class GroupPatch(BaseModel):
     name: Optional[str] = None
     description: Optional[str] = None
     owner_id: Optional[int] = None
+
+
+
 
 @router.post("/", response_model=Dict[str, Any], status_code=status.HTTP_201_CREATED)
 async def create_group(payload: GroupCreate, current_user: dict = Depends(get_current_user)):

@@ -1,0 +1,150 @@
+/* static/css/tasks.css */
+:root{
+  --bg: #f6f8fb;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --primary: #2563eb;
+  --primary-600: #1e4fd6;
+  --accent: #06b6d4;
+  --radius: 12px;
+  --shadow: 0 12px 30px rgba(16,24,40,0.06);
+  --font: Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+}
+
+/* Reset and base */
+*{box-sizing:border-box}
+html,body{height:100%}
+body{
+  margin:0;
+  font-family:var(--font);
+  background:var(--bg);
+  color:#0f172a;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  line-height:1.45;
+  font-size:16px;
+}
+
+/* Layout container */
+.container{
+  max-width:1100px;
+  margin:28px auto;
+  padding:0 20px;
+}
+
+/* Topbar */
+.topbar{
+  background:linear-gradient(90deg, #ffffff 0%, #fbfdff 100%);
+  border-bottom:1px solid rgba(15,23,42,0.04);
+  padding:14px 0;
+  box-shadow:0 2px 6px rgba(2,6,23,0.02);
+}
+.topbar h1{ margin:0; font-size:1.15rem; color:#0b1220; }
+.user-info{ color:var(--muted); font-size:0.95rem; }
+
+/* Card */
+.card{
+  background:var(--card);
+  border-radius:14px;
+  padding:22px;
+  box-shadow:var(--shadow);
+  border:1px solid rgba(15,23,42,0.03);
+  width:100%;
+}
+.card-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:12px;
+}
+.card-header h2{ margin:0; font-size:1.15rem; color:#0b1220; }
+
+/* List */
+.list{ padding:0; list-style:none; margin:0; }
+.list li{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:12px 0;
+  border-bottom:1px solid rgba(15,23,42,0.04);
+}
+.list li:last-child{ border-bottom:0; }
+.meta{ color:var(--muted); font-size:0.95rem; margin-top:6px; }
+
+/* Success badge and text */
+.success-badge{
+  display:inline-block;
+  background:linear-gradient(90deg, rgba(16,185,129,0.12), rgba(6,182,212,0.06));
+  color:#065f46;
+  border:1px solid rgba(16,185,129,0.12);
+  padding:8px 12px;
+  border-radius:999px;
+  font-weight:700;
+  font-size:0.95rem;
+  margin-bottom:12px;
+}
+.success-text{ font-size:1rem; color:#0b1220; margin:8px 0 0 0; }
+.success-sub{ color:var(--muted); margin-top:6px; font-size:0.95rem; }
+
+/* Buttons */
+.btn{
+  display:inline-block;
+  padding:10px 14px;
+  border-radius:10px;
+  font-weight:600;
+  font-size:0.95rem;
+  text-decoration:none;
+  cursor:pointer;
+  border:none;
+  transition:background .12s ease, transform .08s ease, box-shadow .12s ease;
+}
+.btn.primary{
+  background:var(--primary);
+  color:#fff;
+}
+.btn.primary:hover{
+  background:var(--primary-600);
+  transform:translateY(-2px);
+  box-shadow:0 10px 30px rgba(37,99,235,0.12);
+}
+.btn.ghost{
+  background:transparent;
+  color:var(--primary);
+  border:1px solid rgba(15,23,42,0.06);
+}
+.btn.small{ padding:8px 10px; font-size:0.9rem; border-radius:8px; }
+
+/* Footer */
+.footer{ margin-top:28px; text-align:center; color:var(--muted); font-size:0.95rem; }
+
+/* Form elements (for create page) */
+.form-row{ display:flex; gap:12px; margin-bottom:12px; align-items:center; }
+.form-row .col{ flex:1; min-width:0; }
+label{ display:block; font-weight:600; margin-bottom:6px; color:#0b1220; font-size:0.95rem; }
+input[type="text"], input[type="date"], textarea, select{
+  width:100%;
+  padding:10px 12px;
+  border-radius:10px;
+  border:1px solid rgba(15,23,42,0.06);
+  background:#fff;
+  font-size:0.95rem;
+  color:#0b1220;
+}
+textarea{ min-height:120px; resize:vertical; }
+
+/* Empty state */
+.muted{ color:var(--muted); }
+
+/* Responsive */
+@media (max-width:900px){
+  .container{ margin:18px auto; padding:0 14px; }
+  .card{ padding:18px; border-radius:12px; }
+  .card-header{ flex-direction:column; align-items:flex-start; gap:8px; }
+  .actions{ width:100%; display:flex; justify-content:space-between; gap:8px; }
+  .form-row{ flex-direction:column; align-items:stretch; }
+}
+
+/* Small polish */
+.card{ animation: floatIn .36s cubic-bezier(.2,.9,.3,1) both; }
+@keyframes floatIn { from{opacity:0; transform:translateY(8px) scale(.995);} to{opacity:1; transform:none;} }

@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Tâche créée</title>
+  <link rel="stylesheet" href="/static/css/tasks.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
+      <h1 style="margin:0;">Grouply</h1>
+      <div>
+        <a class="btn" href="/tasks">Mes tâches</a>
+      </div>
+    </div>
+  </header>
+
+  <main class="container" style="max-width:720px; margin:36px auto;">
+    <section class="card">
+      <div class="card-header">
+        <h2>Tâche créée avec succès</h2>
+      </div>
+
+      <div style="padding:12px 0;">
+        {% if task_title %}
+          <p>La tâche <strong>{{ task_title }}</strong> a bien été créée.</p>
+        {% elif task_id %}
+          <p>La tâche (ID: <strong>{{ task_id }}</strong>) a bien été créée.</p>
+        {% else %}
+          <p>La tâche a bien été créée.</p>
+        {% endif %}
+        <p class="success-sub" style="margin-top:8px;color:var(--muted);">Vous pouvez consulter la tâche ou revenir à l'accueil.</p>
+      </div>
+
+      <div style="display:flex;gap:10px;justify-content:flex-end;margin-top:16px;">
+        {% if task_id %}
+          <a class="btn" href="/tasks/{{ task_id }}">Voir la tâche</a>
+        {% endif %}
+        <a class="btn primary" href="/">Retour à l'accueil</a>
+        <a class="btn ghost" href="/tasks">Voir toutes mes tâches</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p class="muted">© Grouply</p>
+  </footer>
+</body>
+</html>

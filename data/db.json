@@ -45,6 +45,34 @@
       "full_name": "jack",
       "is_active": true,
       "id": 4
+    },
+    {
+      "email": "test@example.com",
+      "hashed_password": "$2b$12$lBk64uAcwbtZP51L6p2ypOaxwYTvBGWmEgCaGNBTnabKYTahQeoue",
+      "full_name": "test",
+      "is_active": true,
+      "id": 4
+    },
+    {
+      "email": "mol@gmail.com",
+      "hashed_password": "$2b$12$FqoJ9tu359GJ3jUIKEMMYer2xpfnt/MEcGJ3vJkpv2NDrtOojQe9q",
+      "full_name": "mol",
+      "is_active": true,
+      "id": 4
+    },
+    {
+      "email": "moi@gmail.com",
+      "hashed_password": "$2b$12$8QKexzlOOoF/9lTP2IvSzeA9PC4Z/6EHIdneVDLM5lWn6XasVKiIK",
+      "full_name": "moi",
+      "is_active": true,
+      "id": 4
+    },
+    {
+      "email": "pol@gmail.com",
+      "hashed_password": "$2b$12$iTKIxRUCSnzDvIfAeWryW.3Q1SPweTNAZFojd3QwqpJA.tuseCc0u",
+      "full_name": "pol",
+      "is_active": true,
+      "id": 4
     }
   ],
   "groups": [
@@ -90,6 +118,50 @@
       "due_date": null,
       "created_at": "2025-11-25T14:20:26.449678",
       "updated_at": "2025-11-25T14:20:26.449680"
+    },
+    {
+      "id": 3,
+      "title": "tire",
+      "description": "hqdjdcb;j",
+      "status": "todo",
+      "assigned_to_id": 4,
+      "group_id": null,
+      "due_date": "2025-12-12",
+      "created_at": "2025-11-26T12:35:54.729852",
+      "updated_at": "2025-11-26T12:35:54.729868"
+    },
+    {
+      "id": 4,
+      "title": "bite",
+      "description": "jsjhjhns",
+      "status": "todo",
+      "assigned_to_id": 4,
+      "group_id": null,
+      "due_date": "2025-12-13",
+      "created_at": "2025-11-26T12:38:08.351332",
+      "updated_at": "2025-11-26T12:38:08.351344"
+    },
+    {
+      "id": 5,
+      "title": "bite",
+      "description": "jsjhjhns",
+      "status": "todo",
+      "assigned_to_id": 4,
+      "group_id": null,
+      "due_date": "2025-12-13",
+      "created_at": "2025-11-26T12:46:59.111608",
+      "updated_at": "2025-11-26T12:46:59.111619"
+    },
+    {
+      "id": 6,
+      "title": "bjbshjbds",
+      "description": "jjqjskjb",
+      "status": "todo",
+      "assigned_to_id": 4,
+      "group_id": null,
+      "due_date": "2026-12-13",
+      "created_at": "2025-11-26T13:30:06.995401",
+      "updated_at": "2025-11-26T13:30:06.995411"
     }
   ],
   "invites": [
@@ -108,7 +180,7 @@
   "next_ids": {
     "users": 4,
     "groups": 3,
-    "tasks": 3,
+    "tasks": 7,
     "invites": 2
   }
 }
