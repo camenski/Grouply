@@ -85,3 +85,49 @@ async def delete_tache(task_id: int, current_user: Dict[str, Any]) -> None:
     if t.get("assigned_to_id") != current_user["id"]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez supprimer que vos propres tâches")
     await supprimer_tache(task_id)
+
+
+async def lister_taches_par_utilisateur(user_id: int) -> List[Dict[str, Any]]:
+
+    try:
+        from app.crud.tache import lister_taches_par_utilisateur as crud_lister
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Fonction CRUD 'lister_taches_par_utilisateur' manquante. Implémentez-la dans app.crud.tache."
+        )
+
+    tasks = await crud_lister(user_id)
+
+    visible: List[Dict[str, Any]] = []
+    for t in tasks:
+        group_id = t.get("group_id")
+        if group_id:
+            group = await obtenir_groupe_par_id(group_id)
+            if group and user_id in group.get("members", []):
+                visible.append(t)
+        else:
+            if t.get("assigned_to_id") == user_id:
+                visible.append(t)
+
+    return visible
+
+async def associer_tache_a_groupe(task_id: int, group_id: int, current_user: Dict[str, Any]) -> Dict[str, Any]:
+
+    t = await recuperer_tache(task_id)
+    if not t:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Tâche introuvable")
+
+    if t.get("assigned_to_id") != current_user.get("id"):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous ne pouvez associer que vos propres tâches")
+
+    group = await obtenir_groupe_par_id(group_id)
+    if not group:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Groupe introuvable")
+
+    if current_user.get("id") not in group.get("members", []):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Vous devez être membre du groupe pour y associer une tâche")
+
+    patch = {"group_id": group_id}
+    updated = await mettre_a_jour_tache(task_id, patch)
+    return updated

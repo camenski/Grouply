@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Accueil</title>
+  <link rel="stylesheet" href="/static/css/index.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container" style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="display:flex;align-items:center;gap:16px;">
+        <h1 style="margin:0;">Grouply</h1>
+        <div class="user-info" style="color:var(--muted);font-size:0.95rem;">
+          Bonjour, <strong>{{ user.full_name or user.email }}</strong>
+        </div>
+      </div>
+
+      <div>
+        <form method="post" action="/auth/logout" style="display:inline;">
+          <button type="submit" class="btn logout">Déconnexion</button>
+        </form>
+      </div>
+    </div>
+  </header>
+
+  <main class="container grid">
+    <section class="card">
+      <div class="card-header">
+        <h2>Mes tâches</h2>
+        <div class="actions">
+          <a class="btn" href="/tasks/create">Créer une tâche</a>
+        </div>
+      </div>
+
+      <h3>Tâches personnelles</h3>
+      {% if tasks %}
+        <ul class="list">
+          {% for t in tasks if not t.get("_group") %}
+            <li>
+              <div style="flex:1;">
+                <strong>{{ t.title }}</strong> — {{ t.status }}
+                <div class="meta">Échéance: {{ t.due_date or '—' }}</div>
+              </div>
+              <div class="task-actions">
+                <a class="btn small" href="/tasks/{{ t.id }}">Voir</a>
+                <form method="post" action="/tasks/{{ t.id }}/associate" style="display:inline">
+                  <select name="group_id">
+                    <option value="">Associer à un groupe</option>
+                    {% for g in groups %}
+                      <option value="{{ g.id }}">{{ g.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <button class="btn small" type="submit">Associer</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Vous n'avez aucune tâche personnelle.</p>
+      {% endif %}
+
+      <h3>Tâches de mes groupes</h3>
+      {% if tasks %}
+        <ul class="list">
+          {% for t in tasks if t.get("_group") %}
+            <li>
+              <div style="flex:1;">
+                <strong>{{ t.title }}</strong>
+                <div class="meta">Groupe: {{ t._group.name }} • Statut: {{ t.status }}</div>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Aucune tâche de groupe à afficher.</p>
+      {% endif %}
+    </section>
+
+    <section class="card">
+      <div class="card-header">
+        <h2>Mes groupes</h2>
+        <div class="actions">
+          <a class="btn" href="/groups/create">Créer un groupe</a>
+        </div>
+      </div>
+
+      {% if groups %}
+        <ul class="list">
+          {% for g in groups %}
+            <li>
+              <div style="flex:1;">
+                <strong>{{ g.name }}</strong> — Membres: {{ g.member_count }}
+              </div>
+              <div class="group-actions">
+                <a class="btn small" href="/groups/{{ g.id }}">Voir</a>
+                {% if g.creator_id == user.id %}
+                  <a class="btn small" href="/groups/{{ g.id }}/manage">Gérer membres</a>
+                  <form method="post" action="/groups/{{ g.id }}/invite" style="display:inline">
+                    <button class="btn small" type="submit">Générer lien d'invitation</button>
+                  </form>
+                {% endif %}
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Vous n'appartenez à aucun groupe.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p class="muted">© Grouply</p>
+  </footer>
+</body>
+</html>

@@ -13,7 +13,6 @@ from app.crud.groupe import (
 from app.crud.user import recuperer_utilisateur_par_id
 
 async def creer_nouveau_groupe(name: str, description: Optional[str], owner_id: Optional[int]) -> Dict[str, Any]:
-    # si owner_id fourni, vérifier qu'il existe
     if owner_id is not None:
         owner = await recuperer_utilisateur_par_id(owner_id)
         if not owner:
@@ -45,7 +44,6 @@ async def delete_groupe(group_id: int) -> None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Groupe introuvable")
 
 async def ajouter_membre_au_groupe(group_id: int, user_id: int) -> None:
-    # vérifier existence utilisateur
     user = await recuperer_utilisateur_par_id(user_id)
     if not user:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Utilisateur introuvable")
@@ -59,3 +57,28 @@ async def retirer_membre_du_groupe(group_id: int, user_id: int) -> None:
         await retirer_membre(group_id, user_id)
     except KeyError:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Groupe introuvable")
+    
+
+async def obtenir_groupes_par_utilisateur(user_id: int) -> List[Dict[str, Any]]:
+ 
+    try:
+        from app.crud.groupe import lister_groupes_par_utilisateur as crud_lister
+    except Exception:
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Fonction CRUD 'lister_groupes_par_utilisateur' manquante. Implémentez-la dans app.crud.groupe."
+        )
+
+    groupes = await crud_lister(user_id)
+
+    normalized = []
+    for g in groupes:
+        normalized.append({
+            "id": g.get("id"),
+            "name": g.get("name"),
+            "description": g.get("description"),
+            "creator_id": g.get("creator_id") or g.get("owner_id"),
+            "members": g.get("members", []),
+            "member_count": g.get("member_count", len(g.get("members", []))),
+        })
+    return normalized

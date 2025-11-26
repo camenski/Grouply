@@ -1,4 +1,3 @@
-# app/routers/users.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel, EmailStr
 from typing import Optional, Dict, Any

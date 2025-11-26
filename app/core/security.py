@@ -12,13 +12,10 @@ from app.storage.json_db import (
     verifier_mot_de_passe,
 )
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/oauth")
 
 def creer_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
-    """
-    Crée un JWT contenant les claims fournis dans data.
-    On ajoute iat et exp en secondes depuis l'epoch.
-    """
+
     to_encode = data.copy()
     now = datetime.utcnow()
     expire = now + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
@@ -27,9 +24,6 @@ def creer_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] 
     return token
 
 def decoder_access_token(token: str) -> Dict[str, Any]:
-    """
-    Décode et valide le token JWT. Lève HTTPException si invalide ou expiré.
-    """
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
         return payload
@@ -39,9 +33,7 @@ def decoder_access_token(token: str) -> Dict[str, Any]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
 
 async def authentifier_utilisateur(email: str, password: str) -> Optional[Dict[str, Any]]:
-    """
-    Vérifie les identifiants et retourne l'utilisateur (dictionnaire) si valides.
-    """
+
     user = await trouver_utilisateur_par_email(email)
     if not user:
         return None
@@ -51,10 +43,7 @@ async def authentifier_utilisateur(email: str, password: str) -> Optional[Dict[s
     return user
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any]:
-    """
-    Dépendance FastAPI : récupère l'utilisateur courant à partir du token.
-    Le token doit contenir la claim 'sub' avec l'id utilisateur.
-    """
+
     payload = decoder_access_token(token)
     user_id = payload.get("sub")
     if user_id is None:
@@ -69,9 +58,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> Dict[str, Any
     return user
 
 async def get_current_active_user(current_user: Dict[str, Any] = Depends(get_current_user)) -> Dict[str, Any]:
-    """
-    Exemple de wrapper pour vérifier un flag 'is_active' si tu l'ajoutes aux utilisateurs.
-    """
+
     if not current_user.get("is_active", True):
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Utilisateur inactif")
     return current_user

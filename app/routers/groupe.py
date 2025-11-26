@@ -1,4 +1,3 @@
-# app/routers/groups.py
 from fastapi import APIRouter, Depends, HTTPException, status
 from pydantic import BaseModel
 from typing import Optional, Dict, Any, List

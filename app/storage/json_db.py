@@ -33,19 +33,16 @@ async def _ecrire_brut(path: Path, data: Dict[str, Any]) -> None:
     await loop.run_in_executor(None, _write)
 
 async def charger_db() -> Dict[str, Any]:
-    """Retourne le contenu du fichier JSON (crée le fichier si nécessaire)."""
     _ensure_file(DATABASE_JSON_PATH)
     async with _lock:
         return await _lire_brut(DATABASE_JSON_PATH)
 
 async def sauvegarder_db(data: Dict[str, Any]) -> None:
-    """Écrit le dictionnaire complet dans le fichier JSON."""
     _ensure_file(DATABASE_JSON_PATH)
     async with _lock:
         await _ecrire_brut(DATABASE_JSON_PATH, data)
 
 async def obtenir_prochain_id(kind: str) -> int:
-    """Récupère et incrémente l'ID suivant pour 'users', 'groups', 'tasks' ou 'invites'."""
     data = await charger_db()
     nid = data.setdefault("next_ids", {}).get(kind, 1)
     data["next_ids"][kind] = nid + 1
@@ -67,7 +64,6 @@ async def trouver_utilisateur_par_id(user_id: int) -> Optional[Dict[str, Any]]:
     return None
 
 async def ajouter_utilisateur(user_obj: Dict[str, Any]) -> Dict[str, Any]:
-    """Ajoute un utilisateur; user_obj doit contenir email, hashed_password, full_name (optionnel)."""
     data = await charger_db()
     user_obj["id"] = await obtenir_prochain_id("users")
     data.setdefault("users", []).append(user_obj)
@@ -75,7 +71,6 @@ async def ajouter_utilisateur(user_obj: Dict[str, Any]) -> Dict[str, Any]:
     return user_obj
 
 async def ajouter_groupe(group_obj: Dict[str, Any]) -> Dict[str, Any]:
-    """Ajoute un groupe; group_obj doit contenir name, description (optionnel), owner_id (optionnel)."""
     data = await charger_db()
     group_obj["id"] = await obtenir_prochain_id("groups")
     group_obj.setdefault("members", [])
@@ -218,14 +213,14 @@ async def utiliser_invite(token: str, user_id: int) -> Dict[str, Any]:
                     exp = None
                 if exp and exp < datetime.utcnow():
                     raise ValueError("Invitation expirée")
-            # ajouter membre au groupe si pas déjà
+
             for g in data.get("groups", []):
                 if g.get("id") == inv["group_id"]:
                     if user_id not in g.setdefault("members", []):
                         g["members"].append(user_id)
                     break
             inv["uses"] = inv.get("uses", 0) + 1
-            # invalider si atteint max_uses
+
             if inv["uses"] >= inv.get("max_uses", 1):
                 inv["revoked"] = True
             await sauvegarder_db(data)
@@ -241,7 +236,6 @@ async def revoke_invite(invite_id: int) -> None:
             return
     raise KeyError("Invitation introuvable")
 
-# Fonctions d'authentification utilitaires (hachage/verif)
 def hacher_mot_de_passe(password: str) -> str:
     hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
     return hashed.decode("utf-8")
@@ -249,21 +243,15 @@ def hacher_mot_de_passe(password: str) -> str:
 def verifier_mot_de_passe(hashed: str, password: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
 
-# Fonction de seed pour préremplir la DB JSON
 async def seed_db(force: bool = False) -> None:
-    """
-    Crée le fichier si nécessaire et ajoute des données de test.
-    Si force=True, remplace les données existantes.
-    """
+
     _ensure_file(DATABASE_JSON_PATH)
     async with _lock:
         loop = asyncio.get_running_loop()
         data = await loop.run_in_executor(None, lambda: json.loads(DATABASE_JSON_PATH.read_text(encoding="utf-8")))
         if data.get("users") and not force:
-            # déjà initialisé, on ne fait rien
             return
 
-        # helpers locaux
         def _hash(pw: str) -> str:
             return bcrypt.hashpw(pw.encode("utf-8"), bcrypt.gensalt()).decode("utf-8")
 

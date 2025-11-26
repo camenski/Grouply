@@ -1,4 +1,3 @@
-# app/routers/tasks.py (extraits)
 from fastapi import APIRouter, Depends, status
 from pydantic import BaseModel, Field
 from typing import Optional, Dict, Any, List
@@ -19,7 +18,7 @@ class TaskCreate(BaseModel):
     description: Optional[str] = None
     assigned_to_id: Optional[int] = None
     group_id: Optional[int] = None
-    due_date: Optional[str] = None  # ISO string
+    due_date: Optional[str] = None 
 
 class TaskPatch(BaseModel):
     title: Optional[str] = None

@@ -24,6 +24,27 @@
       "full_name": "moko",
       "is_active": true,
       "id": 4
+    },
+    {
+      "email": "user@example.com",
+      "hashed_password": "$2b$12$P6k8dpBZO9UVWO9o3VUhz.FADXtJ/WLd2cJzxypkR.SC6V244nYdG",
+      "full_name": "string",
+      "is_active": true,
+      "id": 4
+    },
+    {
+      "email": "moko@gmail.com",
+      "hashed_password": "$2b$12$3LnZPXZY0dTUzfUF7A3jIOmStsgulqqImLQtNFMUFqvtRBIFi/E2y",
+      "full_name": "moko",
+      "is_active": true,
+      "id": 4
+    },
+    {
+      "email": "jack@gmail.com",
+      "hashed_password": "$2b$12$QOV4m8s2fzANdjiQo/GoiOHRlbcwv1U2tERSNMQ9eu6l4RMeDw52u",
+      "full_name": "jack",
+      "is_active": true,
+      "id": 4
     }
   ],
   "groups": [
