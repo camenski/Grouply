@@ -6,7 +6,7 @@ from pathlib import Path
 from app.dependencies.auth import get_current_user
 from app.services.tache import lister_taches_par_utilisateur, list_taches_du_groupe, associer_tache_a_groupe
 from app.services.groupe import obtenir_groupes_par_utilisateur, retirer_membre_du_groupe
-from app.services.invite_service import generer_invitation
+# from app.services.invite_service import generer_invitation
 from app.storage.json_db import obtenir_groupe_par_id
 from app.dependencies.auth import get_current_user
 
@@ -17,6 +17,7 @@ templates = Jinja2Templates(directory="templates")
 @router.get("/", include_in_schema=False)
 async def index(request: Request, current_user: dict = Depends(get_current_user)):
     user = current_user
+    print("kkhjgfjhgfjhfkhjfkjhfkjhgkjhgkjhgkjhgkjhgkjgjgkjhgkjhgkjgkkgkjhgkjhgkjgkjhgkjhgkjhgkjhgkjhgkjhgkkghj",user)
     user_id = user["id"]
     personal_tasks = await lister_taches_par_utilisateur(user_id)
     groups = await obtenir_groupes_par_utilisateur(user_id)
@@ -37,16 +38,16 @@ async def associate_task(task_id: int, group_id: int = Form(...), current_user: 
     await associer_tache_a_groupe(task_id, group_id, current_user)
     return RedirectResponse(url="/", status_code=303)
 
-@router.post("/groups/{group_id}/invite", include_in_schema=False)
-async def invite_link(group_id: int, current_user: dict = Depends(get_current_user)):
-    group = await obtenir_groupe_par_id(group_id)
-    if not group:
-        raise HTTPException(status_code=404, detail="Groupe introuvable")
-    if group.get("creator_id") != current_user["id"]:
-        raise HTTPException(status_code=403, detail="Accès refusé")
-    token = await generer_invitation(group_id, current_user["id"])
-    invite_url = f"/groups/join/{token}"
-    return JSONResponse({"invite_url": invite_url})
+# @router.post("/groups/{group_id}/invite", include_in_schema=False)
+# async def invite_link(group_id: int, current_user: dict = Depends(get_current_user)):
+#     group = await obtenir_groupe_par_id(group_id)
+#     if not group:
+#         raise HTTPException(status_code=404, detail="Groupe introuvable")
+#     if group.get("creator_id") != current_user["id"]:
+#         raise HTTPException(status_code=403, detail="Accès refusé")
+#     token = await generer_invitation(group_id, current_user["id"])
+#     invite_url = f"/groups/join/{token}"
+#     return JSONResponse({"invite_url": invite_url})
 
 @router.get("/groups/{group_id}/manage", include_in_schema=False)
 async def manage_group(request: Request, group_id: int, current_user: dict = Depends(get_current_user)):

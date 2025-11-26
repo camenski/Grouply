@@ -73,6 +73,27 @@
       "full_name": "pol",
       "is_active": true,
       "id": 4
+    },
+    {
+      "email": "hack@th.com",
+      "hashed_password": "$2b$12$AbuZ59loRiyX9l/jI/0Zl.soqgGL.mtbYkHvsmaHnj8j2M2Z/VkWa",
+      "full_name": "jack",
+      "is_active": true,
+      "id": 4
+    },
+    {
+      "email": "hack@th.co",
+      "hashed_password": "$2b$12$dv9vpehU4.ImElIO8jy.F.HATNE/BMJBHO./Swu1v1/khi8MLZjIy",
+      "full_name": "hack",
+      "is_active": true,
+      "id": 6
+    },
+    {
+      "email": "pat@gmail.com",
+      "hashed_password": "$2b$12$KWW/LKRaQ8703KPZypvl6elshdK0k5//mJc3nHoOiTABPmfSZ7YwK",
+      "full_name": "pat",
+      "is_active": true,
+      "id": 7
     }
   ],
   "groups": [
@@ -162,6 +183,17 @@
       "due_date": "2026-12-13",
       "created_at": "2025-11-26T13:30:06.995401",
       "updated_at": "2025-11-26T13:30:06.995411"
+    },
+    {
+      "id": 7,
+      "title": "fnvfnb",
+      "description": "bjqjbvf ",
+      "status": "todo",
+      "assigned_to_id": 7,
+      "group_id": null,
+      "due_date": "2025-12-12",
+      "created_at": "2025-11-26T16:14:58.037107",
+      "updated_at": "2025-11-26T16:14:58.037118"
     }
   ],
   "invites": [
@@ -178,9 +210,9 @@
     }
   ],
   "next_ids": {
-    "users": 4,
+    "users": 6,
     "groups": 3,
-    "tasks": 7,
+    "tasks": 8,
     "invites": 2
   }
 }

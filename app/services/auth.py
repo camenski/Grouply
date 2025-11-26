@@ -14,7 +14,7 @@ async def connexion(email: str, password: str) -> Dict[str, Any]:
     if not user:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiants invalides")
     token_data = {"sub": str(user["id"])}
-    token = creer_access_token(token_data, expires_delta=timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
+    token = creer_access_token(token_data)
     return {"access_token": token, "token_type": "bearer", "user": user}
 
 async def inscrire_utilisateur(email: str, password: str, full_name: Optional[str] = None) -> Dict[str, Any]:

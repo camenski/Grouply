@@ -47,7 +47,7 @@ async def obtenir_prochain_id(kind: str) -> int:
     nid = data.setdefault("next_ids", {}).get(kind, 1)
     data["next_ids"][kind] = nid + 1
     await sauvegarder_db(data)
-    return nid
+    return nid+1
 
 async def trouver_utilisateur_par_email(email: str) -> Optional[Dict[str, Any]]:
     data = await charger_db()
@@ -68,6 +68,7 @@ async def ajouter_utilisateur(user_obj: Dict[str, Any]) -> Dict[str, Any]:
     user_obj["id"] = await obtenir_prochain_id("users")
     data.setdefault("users", []).append(user_obj)
     await sauvegarder_db(data)
+    print(user_obj)
     return user_obj
 
 async def ajouter_groupe(group_obj: Dict[str, Any]) -> Dict[str, Any]:

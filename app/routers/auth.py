@@ -8,7 +8,7 @@ from pathlib import Path
 from datetime import timedelta
 
 from app.services.auth import connexion, inscrire_utilisateur
-from app.core.security import get_current_user 
+from app.core.security import get_current_user, creer_access_token
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -44,14 +44,14 @@ async def login_form(request: Request, email: str = Form(...), password: str = F
         result = await connexion(email, password)
     except Exception as e:
         return templates.TemplateResponse("login.html", {"request": request, "message": str(e)})
-
-    token = result.get("access_token")
+    token = result["access_token"]
     if not token:
         return templates.TemplateResponse("login.html", {"request": request, "message": "Erreur d'authentification : token manquant."})
 
     token_str: str = str(token)
 
     response = RedirectResponse(url="/index", status_code=303)
+    print("mlqjfmlqjfmqsljfqslkfjqmslfjsf:",token)
     response.set_cookie(
         key="access_token",
         value=token_str,

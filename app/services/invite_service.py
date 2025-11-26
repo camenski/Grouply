@@ -1,33 +1,30 @@
-# app/services/invite_service.py
-from fastapi import HTTPException, status
-from datetime import datetime
-from typing import Dict, Any
+# # app/services/invite.py
+# import secrets
+# from datetime import datetime, timedelta
+# from sqlalchemy.ext.asyncio import AsyncSession
+# from sqlalchemy.future import select
+# from app.models.invite import GroupInvite
 
-from app.storage.json_db import (
-    creer_invitation,
-    obtenir_invite_par_token,
-    utiliser_invite,
-)
-from app.crud.groupe import obtenir_groupe_par_id
-from app.crud.user import recuperer_utilisateur_par_id
+# INVITE_TOKEN_BYTES = 32
+# DEFAULT_EXPIRE_DAYS = 7
 
-async def generer_invitation(group_id: int, current_user: Dict[str, Any], expires_in_days: int = 7, max_uses: int = 1) -> Dict[str, Any]:
-    group = await obtenir_groupe_par_id(group_id)
-    if not group:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Groupe introuvable")
-    if group.get("owner_id") != current_user["id"]:
-        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Seul le propriétaire peut créer une invitation")
-    return await creer_invitation(group_id=group_id, created_by=current_user["id"], expires_in_days=expires_in_days, max_uses=max_uses)
+# async def create_group_invite(db: AsyncSession, group_id: int, expires_days: int = DEFAULT_EXPIRE_DAYS, max_uses: int | None = None) -> GroupInvite:
+#     token = secrets.token_urlsafe(INVITE_TOKEN_BYTES)
+#     expires_at = datetime.utcnow() + timedelta(days=expires_days) if expires_days else None
+#     invite = GroupInvite(group_id=group_id, token=token, expires_at=expires_at, max_uses=max_uses)
+#     db.add(invite)
+#     await db.commit()
+#     await db.refresh(invite)
+#     return invite
 
-async def rejoindre_via_invite(token: str, current_user: Dict[str, Any]) -> Dict[str, Any]:
-    inv = await obtenir_invite_par_token(token)
-    if not inv:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invitation introuvable")
-    if inv.get("revoked"):
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invitation révoquée")
-    if inv.get("expires_at") and datetime.fromisoformat(inv["expires_at"]) < datetime.utcnow():
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Invitation expirée")
-    try:
-        return await utiliser_invite(token, current_user["id"])
-    except ValueError as e:
-        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+# async def get_invite_by_token(db: AsyncSession, token: str) -> GroupInvite | None:
+#     q = await db.execute(select(GroupInvite).where(GroupInvite.token == token, GroupInvite.is_active == True))
+#     return q.scalars().first()
+
+# async def consume_invite(db: AsyncSession, invite: GroupInvite) -> None:
+#     invite.uses += 1
+#     if invite.max_uses is not None and invite.uses >= invite.max_uses:
+#         invite.is_active = False
+#     db.add(invite)
+#     await db.commit()
+#     await db.refresh(invite)

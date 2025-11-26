@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta
 from typing import Optional, Dict, Any
+import json
 
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
@@ -14,13 +15,16 @@ from app.storage.json_db import (
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login/oauth")
 
-def creer_access_token(data: Dict[str, Any], expires_delta: Optional[timedelta] = None) -> str:
+def creer_access_token(data: Dict[str, Any]) -> str:
 
-    to_encode = data.copy()
-    now = datetime.utcnow()
-    expire = now + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
-    to_encode.update({"iat": int(now.timestamp()), "exp": int(expire.timestamp())})
-    token = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    print("payload:",data)
+
+    payload = {
+        "iat": datetime.now(),
+        "exp": datetime.now() + timedelta(hours=5),
+        "sub": json.dumps(data)
+    }
+    token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
     return token
 
 def decoder_access_token(token: str) -> Dict[str, Any]:
@@ -35,17 +39,19 @@ def decoder_access_token(token: str) -> Dict[str, Any]:
 async def authentifier_utilisateur(email: str, password: str) -> Optional[Dict[str, Any]]:
 
     user = await trouver_utilisateur_par_email(email)
+    print("\nuser:",user)
     if not user:
         return None
-    hashed = user.get("hashed_password") or user.get("password") 
-    if not hashed or not verifier_mot_de_passe(hashed, password):
+    hashed = user.get("hashed_password", "")  
+    print(verifier_mot_de_passe(hashed, password))
+    if not verifier_mot_de_passe(hashed, password):
         return None
     return user
 
 async def get_current_user(request: Request) -> Dict[str, Any]:
 
     token: Optional[str] = request.cookies.get("access_token")
-
+    print("\n\n\n fmqsdjflkmqdfkjqklfjqsmdkfjqsldkfhqlskhkjdhfqksjhgdfkjhgdlsfkjghlsdkfjhgldskfjhgsdklfjhglsdkfjhgksdfjghd",token)
     if not token:
         auth = request.headers.get("authorization")
         if auth and auth.lower().startswith("bearer "):
@@ -60,15 +66,12 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Token invalide")
 
     user_id = payload.get("sub")
-    if user_id is None:
+    id = user_id["sub"] # type: ignore
+    if id is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Accès non autorisé")
 
-    try:
-        user_id_int = int(user_id)
-    except (TypeError, ValueError):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Identifiant utilisateur invalide dans le token")
 
-    user = await trouver_utilisateur_par_id(user_id_int)
+    user = await trouver_utilisateur_par_id(id)
     if not user:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable")
 
