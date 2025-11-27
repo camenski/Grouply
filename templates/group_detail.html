@@ -5,9 +5,14 @@
     <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
-    <h1>{{ group.name }}</h1>
-    <p>{{ group.description }}</p>
-    <p>Créé par : {{ group.owner_id }}</p>
+    {% if group %}
+        <h1>{{ group.name }}</h1>
+        <p>{{ group.description }}</p>
+        <p>Créé par : {{ owner.full_name or owner.email }}</p>
+    {% else %}
+        <p class="muted">Ce groupe n'existe pas ou a été supprimé.</p>
+    {% endif %}
+
 
     <h2>Membres</h2>
     <ul>

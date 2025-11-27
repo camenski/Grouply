@@ -6,7 +6,7 @@ from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt, JWTError, ExpiredSignatureError
 
-from app.core.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES
+from app.core.config import SECRET_KEY, ALGORITHM
 from app.storage.json_db import (
     trouver_utilisateur_par_email,
     trouver_utilisateur_par_id,
@@ -21,7 +21,7 @@ def creer_access_token(data: Dict[str, Any]) -> str:
 
     payload = {
         "iat": datetime.now(),
-        "exp": datetime.now() + timedelta(hours=5),
+        "exp": datetime.now() + timedelta(hours=24),
         "sub": json.dumps(data)
     }
     token = jwt.encode(payload, SECRET_KEY, ALGORITHM)
@@ -51,7 +51,6 @@ async def authentifier_utilisateur(email: str, password: str) -> Optional[Dict[s
 async def get_current_user(request: Request) -> Dict[str, Any]:
 
     token: Optional[str] = request.cookies.get("access_token")
-    print("\n\n\n fmqsdjflkmqdfkjqklfjqsmdkfjqsldkfhqlskhkjdhfqksjhgdfkjhgdlsfkjghlsdkfjhgldskfjhgsdklfjhglsdkfjhgksdfjghd",token)
     if not token:
         auth = request.headers.get("authorization")
         if auth and auth.lower().startswith("bearer "):

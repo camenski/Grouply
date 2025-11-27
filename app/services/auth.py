@@ -6,7 +6,7 @@ from fastapi import HTTPException, status
 from app.core.security import creer_access_token, authentifier_utilisateur
 from app.storage.json_db import trouver_utilisateur_par_id, hacher_mot_de_passe
 
-ACCESS_TOKEN_EXPIRE_MINUTES = 30 
+ACCESS_TOKEN_EXPIRE_MINUTES = 90
 
 async def connexion(email: str, password: str) -> Dict[str, Any]:
 

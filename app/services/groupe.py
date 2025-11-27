@@ -20,14 +20,43 @@ from app.crud.tache import (
     lister_taches_par_groupe
 )
 from app.crud.user import recuperer_utilisateur_par_id
+from app.storage.json_db import charger_db, sauvegarder_db
 
+async def creer_nouveau_groupe(
+    name: str,
+    description: Optional[str],
+    owner_id: Optional[int],
+    current_user: dict
+) -> Dict[str, Any]:
+    if owner_id is None:
+        owner_id = current_user.get("id")
+        if not owner_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Utilisateur invalide"
+            )
 
-async def creer_nouveau_groupe(name: str, description: Optional[str], owner_id: Optional[int], current_user: dict) -> Dict[str, Any]:
-    if owner_id is not None:
-        owner = await recuperer_utilisateur_par_id(owner_id)
-        if not owner:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Propriétaire introuvable")
-    return await creer_groupe(name=name, description=description, owner_id=owner_id or current_user.get("id"))
+    db = await charger_db()
+
+    new_id = max([g["id"] for g in db.get("groups", [])] or [0]) + 1
+
+    owner = await recuperer_utilisateur_par_id(owner_id)
+    owner_name = owner.get("full_name") if owner else None
+
+    new_group = {
+        "id": new_id,
+        "name": name,
+        "description": description,
+        "owner_id": owner_id,
+        "owner_name": owner_name,
+        "members": [owner_id],
+        "tasks": []
+    }
+
+    db.setdefault("groups", []).append(new_group)
+    await sauvegarder_db(db)
+
+    return new_group
 
 
 async def modifier_groupe(group_id: int, patch: Dict[str, Any], current_user: dict) -> Dict[str, Any]:
@@ -57,11 +86,26 @@ async def retirer_membre_du_groupe(group_id: int, user_id: int, current_user: di
     await retirer_membre(group_id, user_id)
 
 
-async def creer_tache_dans_groupe(group_id: int, title: str, description: Optional[str], assigned_to_id: Optional[int], due_date: Optional[str], current_user: dict) -> Dict[str, Any]:
+async def creer_tache_dans_groupe(
+    group_id: int,
+    title: str,
+    description: Optional[str],
+    due_date: Optional[str],
+    current_user: dict
+) -> Dict[str, Any]:
     group = await recuperer_groupe(group_id)
     if not group:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Groupe introuvable")
-    return await creer_tache(title=title, description=description, assigned_to_id=assigned_to_id, group_id=group_id, due_date=due_date)
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Groupe introuvable"
+        )
+
+    return await creer_tache(
+        title=title,
+        description=description,
+        group_id=group_id,
+        due_date=due_date,
+     )
 
 
 async def supprimer_tache_du_groupe(group_id: int, task_id: int, current_user: dict) -> None:

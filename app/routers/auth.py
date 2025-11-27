@@ -51,7 +51,6 @@ async def login_form(request: Request, email: str = Form(...), password: str = F
     token_str: str = str(token)
 
     response = RedirectResponse(url="/index", status_code=303)
-    print("mlqjfmlqjfmqsljfqslkfjqmslfjsf:",token)
     response.set_cookie(
         key="access_token",
         value=token_str,

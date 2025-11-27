@@ -1,7 +1,7 @@
 
 from typing import Optional
 from datetime import datetime
-from pydantic import BaseModel
+from pydantic import BaseModel,Field
 
 
 class TacheBase(BaseModel):
@@ -10,17 +10,17 @@ class TacheBase(BaseModel):
     due_date: Optional[datetime] = None
 
 class TaskCreate(BaseModel):
-    title: str
+    title: str = Field(..., min_length=1)
     description: Optional[str] = None
-    assigned_to_id: Optional[int] = None
-    due_date: Optional[str] = None
+    group_id: Optional[int] = None
+    due_date: Optional[str] = None 
 
-
-class TacheUpdate(BaseModel):
+class TaskPatch(BaseModel):
     title: Optional[str] = None
     description: Optional[str] = None
-    due_date: Optional[datetime] = None
-    assigned_to: Optional[int] = None
+    status: Optional[str] = None
+    group_id: Optional[int] = None
+    due_date: Optional[str] = None
 
 
 class TacheRead(TacheBase):

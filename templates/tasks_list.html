@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Mes tâches</title>
+  <link rel="stylesheet" href="/static/css/task.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <h1>Grouply</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="card-header">
+        <h2>Mes tâches</h2>
+        <div class="actions">
+          <a class="btn" href="/tasks/create">Créer une tâche</a>
+          <a class="btn ghost" href="/">Retour à l'accueil</a>
+        </div>
+      </div>
+
+      <h3>Tâches personnelles</h3>
+      {% if tasks %}
+        <ul class="list">
+          {% for t in tasks if not t.get("group_id") %}
+            <li>
+              <div style="flex:1;">
+                <strong>{{ t.title }}</strong> — {{ t.status }}
+                <div class="meta">Échéance: {{ t.due_date or "—" }}</div>
+              </div>
+              <div class="task-actions">
+                <a class="btn small" href="/tasks/{{ t.id }}">Voir</a>
+                <a class="btn small" href="/tasks/{{ t.id }}/edit">Modifier</a>
+                <form method="post" action="/tasks/{{ t.id }}/delete" style="display:inline">
+                  <button class="btn small danger" type="submit">Supprimer</button>
+                </form>
+                <form method="post" action="/tasks/{{ t.id }}/associate" style="display:inline">
+                  <select name="group_id">
+                    <option value="">Associer à un groupe</option>
+                    {% for g in groups %}
+                      <option value="{{ g.id }}">{{ g.name }}</option>
+                    {% endfor %}
+                  </select>
+                  <button class="btn small" type="submit">Associer</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Vous n'avez aucune tâche personnelle.</p>
+      {% endif %}
+
+      <h3>Tâches de mes groupes</h3>
+      {% if tasks %}
+        <ul class="list">
+          {% for t in tasks if t.get("group_id") %}
+            <li>
+              <div style="flex:1;">
+                <strong>{{ t.title }}</strong> — {{ t.status }}
+                <div class="meta">Groupe: {{ t.group_id }} • Échéance: {{ t.due_date or "—" }}</div>
+              </div>
+              <div class="task-actions">
+                <a class="btn small" href="/tasks/{{ t.id }}">Voir</a>
+                <a class="btn small" href="/tasks/{{ t.id }}/edit">Modifier</a>
+                <form method="post" action="/tasks/{{ t.id }}/delete" style="display:inline">
+                  <button class="btn small danger" type="submit">Supprimer</button>
+                </form>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      {% else %}
+        <p class="muted">Aucune tâche de groupe à afficher.</p>
+      {% endif %}
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p class="muted">© Grouply</p>
+  </footer>
+</body>
+</html>

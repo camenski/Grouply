@@ -8,14 +8,20 @@
     <h1>Mes groupes</h1>
     <p><a href="/groups/create">Créer un nouveau groupe</a></p>
 
-    <ul>
-        {% for group in groups %}
-            <li>
-                <strong>{{ group.name }}</strong> - {{ group.description or "Pas de description" }}
-                ({{ group.member_count }} membres)
-                <a href="/groups/{{ group.id }}">Voir</a>
-            </li>
-        {% endfor %}
-    </ul>
+    {% if groups %}
+        <ul>
+            {% for group in groups %}
+                <li>
+                    <strong>{{ group.name }}</strong> - {{ group.description or "Pas de description" }}
+                    ({{ group.member_count }} membres)
+                    <a href="/groups/{{ group.id }}">Voir</a>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p class="muted">Vous ne faites partie d'aucun groupe pour le moment.</p>
+    {% endif %}
+
+    <p><a class="btn" href="/">Retour à l'accueil</a></p>
 </body>
 </html>

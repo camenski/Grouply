@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Créer une tâche</title>
+  <title>Modifier une tâche</title>
   <link rel="stylesheet" href="/static/css/task.css" />
 </head>
 <body>
@@ -16,9 +16,9 @@
   <main class="container">
     <section class="card" style="max-width:720px; margin:28px auto;">
       <div class="card-header">
-        <h2>Nouvelle tâche</h2>
+        <h2>Modifier la tâche</h2>
         <div class="actions">
-          <a class="btn ghost" href="/">Annuler</a>
+          <a class="btn ghost" href="/tasks/{{ task.id }}">Annuler</a>
         </div>
       </div>
 
@@ -26,27 +26,33 @@
         <p class="message error">{{ message }}</p>
       {% endif %}
 
-      <form method="post" action="/tasks/create">
+      <form method="post" action="/tasks/{{ task.id }}/edit">
         <label for="title">Titre</label>
-        <input id="title" name="title" type="text" required />
-      
+        <input id="title" name="title" type="text" value="{{ task.title }}" required />
+
         <label for="description">Description</label>
-        <textarea id="description" name="description"></textarea>
-      
+        <textarea id="description" name="description">{{ task.description }}</textarea>
+
+        <label for="status">Statut</label>
+        <select id="status" name="status">
+          <option value="todo" {% if task.status == "todo" %}selected{% endif %}>À faire</option>
+          <option value="in_progress" {% if task.status == "in_progress" %}selected{% endif %}>En cours</option>
+          <option value="done" {% if task.status == "done" %}selected{% endif %}>Terminée</option>
+        </select>
+
         <label for="group_id">Associer à un groupe (optionnel)</label>
         <select id="group_id" name="group_id">
           <option value="">— Aucun —</option>
           {% for g in groups %}
-            <option value="{{ g.id }}">{{ g.name }}</option>
+            <option value="{{ g.id }}" {% if task.group_id == g.id %}selected{% endif %}>{{ g.name }}</option>
           {% endfor %}
         </select>
-      
+
         <label for="due_date">Échéance</label>
-        <input id="due_date" name="due_date" type="date" />
-      
-        <button type="submit" class="btn primary">Créer la tâche</button>
+        <input id="due_date" name="due_date" type="date" value="{{ task.due_date }}" />
+
+        <button type="submit" class="btn primary">Enregistrer les modifications</button>
       </form>
-      
     </section>
   </main>
 

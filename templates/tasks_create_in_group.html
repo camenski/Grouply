@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Créer une tâche</title>
+  <title>Créer une tâche dans le groupe</title>
   <link rel="stylesheet" href="/static/css/task.css" />
 </head>
 <body>
@@ -16,9 +16,9 @@
   <main class="container">
     <section class="card" style="max-width:720px; margin:28px auto;">
       <div class="card-header">
-        <h2>Nouvelle tâche</h2>
+        <h2>Nouvelle tâche dans {{ group.name }}</h2>
         <div class="actions">
-          <a class="btn ghost" href="/">Annuler</a>
+          <a class="btn ghost" href="/groups/{{ group.id }}/tasks">Annuler</a>
         </div>
       </div>
 
@@ -26,27 +26,18 @@
         <p class="message error">{{ message }}</p>
       {% endif %}
 
-      <form method="post" action="/tasks/create">
+      <form method="post" action="/groups/{{ group.id }}/tasks">
         <label for="title">Titre</label>
         <input id="title" name="title" type="text" required />
-      
+
         <label for="description">Description</label>
         <textarea id="description" name="description"></textarea>
-      
-        <label for="group_id">Associer à un groupe (optionnel)</label>
-        <select id="group_id" name="group_id">
-          <option value="">— Aucun —</option>
-          {% for g in groups %}
-            <option value="{{ g.id }}">{{ g.name }}</option>
-          {% endfor %}
-        </select>
-      
+
         <label for="due_date">Échéance</label>
         <input id="due_date" name="due_date" type="date" />
-      
+
         <button type="submit" class="btn primary">Créer la tâche</button>
       </form>
-      
     </section>
   </main>
 

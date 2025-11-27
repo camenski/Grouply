@@ -108,6 +108,13 @@
       "full_name": "br",
       "is_active": true,
       "id": 8
+    },
+    {
+      "email": "bim@gmail.com",
+      "hashed_password": "$2b$12$aTPzJcVwx59CgmyEZsWMPOYEqd0BQg9JSJPz3AobQ/FhL4O2crXA.",
+      "full_name": "bim",
+      "is_active": true,
+      "id": 9
     }
   ],
   "groups": [
@@ -129,6 +136,51 @@
       "members": [
         2
       ]
+    },
+    {
+      "name": "vdsh",
+      "description": ",nv,,sn",
+      "owner_id": 8,
+      "id": 3,
+      "members": []
+    },
+    {
+      "name": "ghfhfh",
+      "description": "fsjbf",
+      "owner_id": 8,
+      "id": 4,
+      "members": []
+    },
+    {
+      "name": "gjshqvb",
+      "description": "bbdhbjq",
+      "owner_id": 8,
+      "id": 5,
+      "members": []
+    },
+    {
+      "name": "hdh ",
+      "description": "bbvbljq v",
+      "owner_id": 9,
+      "id": 6,
+      "members": []
+    },
+    {
+      "name": "ccvjc",
+      "description": "hjgcghc",
+      "owner_id": 9,
+      "id": 7,
+      "members": []
+    },
+    {
+      "id": 8,
+      "name": "jnbb",
+      "description": "knsvdn",
+      "owner_id": 9,
+      "members": [
+        9
+      ],
+      "tasks": []
     }
   ],
   "tasks": [
@@ -208,6 +260,17 @@
       "due_date": "2025-12-12",
       "created_at": "2025-11-26T16:14:58.037107",
       "updated_at": "2025-11-26T16:14:58.037118"
+    },
+    {
+      "id": 8,
+      "title": "bkjjb",
+      "description": "vsjbqjbjb",
+      "status": "todo",
+      "assigned_to_id": 9,
+      "group_id": null,
+      "due_date": "2025-12-12",
+      "created_at": "2025-11-27T11:29:12.375735",
+      "updated_at": "2025-11-27T16:29:04.164914"
     }
   ],
   "invites": [
@@ -221,12 +284,45 @@
       "uses": 0,
       "revoked": false,
       "created_at": "2025-11-25T14:20:26.465064"
+    },
+    {
+      "id": 2,
+      "group_id": 3,
+      "token": "SYrdRzss4cKsbrs2zQFLkQ",
+      "created_by": 8,
+      "created_at": "2025-11-27T10:15:08.372876",
+      "expires_at": "2025-12-04T10:15:08.372204",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 3,
+      "group_id": 5,
+      "token": "pC9SOrbLJkLfNbwSsjcwIQ",
+      "created_by": 8,
+      "created_at": "2025-11-27T10:40:31.989701",
+      "expires_at": "2025-12-04T10:40:31.988856",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 4,
+      "group_id": 8,
+      "token": "Jr6DeECNi_IpzyKZYjR8-A",
+      "created_by": 9,
+      "created_at": "2025-11-27T16:20:44.702376",
+      "expires_at": "2025-12-04T16:20:44.701943",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
     }
   ],
   "next_ids": {
     "users": 6,
     "groups": 3,
-    "tasks": 8,
+    "tasks": 9,
     "invites": 2
   }
 }

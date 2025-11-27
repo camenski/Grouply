@@ -30,31 +30,36 @@
         <h2>Mes tâches</h2>
         <div class="actions">
           <a class="btn" href="/tasks/create">Créer une tâche</a>
+          <a class="btn" href="/tasks">Voir toutes mes tâches personnelles</a>
         </div>
       </div>
 
-      <h3>Tâches personnelles</h3>
+      <h3>Tâches personnelles (2 plus récentes)</h3>
       {% if tasks %}
         <ul class="list">
           {% for t in tasks if not t.get("_group") %}
-            <li>
-              <div style="flex:1;">
-                <strong>{{ t.title }}</strong> — {{ t.status }}
-                <div class="meta">Échéance: {{ t.due_date or '—' }}</div>
-              </div>
-              <div class="task-actions">
-                <a class="btn small" href="/tasks/{{ t.id }}">Voir</a>
-                <form method="post" action="/tasks/{{ t.id }}/associate" style="display:inline">
-                  <select name="group_id">
-                    <option value="">Associer à un groupe</option>
-                    {% for g in groups %}
-                      <option value="{{ g.id }}">{{ g.name }}</option>
-                    {% endfor %}
-                  </select>
-                  <button class="btn small" type="submit">Associer</button>
-                </form>
-              </div>
-            </li>
+            {% if loop.index <= 2 %}
+              <li>
+                <div style="flex:1;">
+                  <strong>{{ t.title }}</strong> — {{ t.status }}
+                  <div class="meta">Échéance: {{ t.due_date or '—' }}</div>
+                </div>
+                <div class="task-actions">
+                  
+                  <a class="btn" href="/tasks/{{ task_id }}">Voir la tâche</a>
+                
+                  <form method="post" action="/tasks/{{ t.id }}/associate" style="display:inline">
+                    <select name="group_id">
+                      <option value="">Associer à un groupe</option>
+                      {% for g in groups %}
+                        <option value="{{ g.id }}">{{ g.name }}</option>
+                      {% endfor %}
+                    </select>
+                    <button class="btn small" type="submit">Associer</button>
+                  </form>
+                </div>
+              </li>
+            {% endif %}
           {% endfor %}
         </ul>
       {% else %}
@@ -83,19 +88,26 @@
         <h2>Mes groupes</h2>
         <div class="actions">
           <a class="btn" href="/groups/create">Créer un groupe</a>
+          <a class="btn" href="/groups/list">Voir tous mes groupes</a>
         </div>
       </div>
-
+    
       {% if groups %}
         <ul class="list">
           {% for g in groups %}
             <li>
               <div style="flex:1;">
-                <strong>{{ g.name }}</strong> — Membres: {{ g.member_count }}
+                <strong>{{ g.name }}</strong>
+                <div class="meta">
+                  Membres: {{ g.member_count }} • Créateur: {{ g.owner_id }}
+                </div>
+                {% if g.description %}
+                  <div class="muted">{{ g.description }}</div>
+                {% endif %}
               </div>
               <div class="group-actions">
                 <a class="btn small" href="/groups/{{ g.id }}">Voir</a>
-                {% if g.creator_id == user.id %}
+                {% if g.owner_id == user.id %}
                   <a class="btn small" href="/groups/{{ g.id }}/manage">Gérer membres</a>
                   <form method="post" action="/groups/{{ g.id }}/invite" style="display:inline">
                     <button class="btn small" type="submit">Générer lien d'invitation</button>

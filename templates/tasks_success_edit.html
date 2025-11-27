@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Modification réussie</title>
+  <link rel="stylesheet" href="/static/css/task.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <h1>Grouply</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" style="max-width:720px; margin:28px auto;">
+      <div class="card-header">
+        <h2>Modification réussie ✅</h2>
+      </div>
+
+      <p>La tâche <strong>{{ task_title }}</strong> a été modifiée avec succès.</p>
+
+      <div class="actions">
+        <a class="btn" href="/tasks/{{ task_id }}">Retour à la tâche</a>
+        <a class="btn ghost" href="/tasks/list">Retour à la liste des tâches</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p class="muted">© Grouply</p>
+  </footer>
+</body>
+</html>

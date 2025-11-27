@@ -6,6 +6,7 @@ from fastapi.templating import Jinja2Templates
 from app.dependencies.auth import get_current_user
 from app.schemas.groupe import GroupCreate,GroupUpdate
 from app.schemas.tache import TaskCreate
+from app.crud.user import recuperer_utilisateur_par_id
 from app.services.groupe import (
     creer_nouveau_groupe,
     modifier_groupe,
@@ -57,10 +58,37 @@ async def create_group_from_form(
     return RedirectResponse(url=f"/groups/{new_group['id']}", status_code=303)
 
 @router.get("/{group_id}", include_in_schema=False)
-async def group_detail_page(group_id: int, request: Request, current_user: dict = Depends(get_current_user)):
-    group = await modifier_groupe(group_id, {}, current_user)  # récupération simple
+async def group_detail_page(
+    group_id: int,
+    request: Request,
+    current_user: dict = Depends(get_current_user)
+):
+    group = await modifier_groupe(group_id, {}, current_user)
+    if not group:
+        raise HTTPException(status_code=404, detail="Groupe introuvable")
+
     tasks = await lister_taches_du_groupe(group_id, current_user)
-    return templates.TemplateResponse("group_detail.html", {"request": request, "user": current_user, "group": group, "tasks": tasks})
+
+    owner_id = group.get("owner_id")
+    owner = None
+    if owner_id:
+        owner = await recuperer_utilisateur_par_id(owner_id)
+
+    members = group.get("members", [])
+    member_count = len(members)
+
+    context = {
+        "request": request,
+        "user": current_user,
+        "group": group,
+        "tasks": tasks,
+        "owner": owner,
+        "members": members,
+        "member_count": member_count,
+    }
+
+    return templates.TemplateResponse("group_detail.html", context)
+
 
 @router.get("/{group_id}/invite", include_in_schema=False)
 async def group_invite_page(group_id: int, request: Request, current_user: dict = Depends(get_current_user)):
@@ -87,8 +115,19 @@ async def remove_member(group_id: int, user_id: int, current_user: dict = Depend
     return {}
 
 @router.post("/{group_id}/tasks", response_model=Dict[str, Any])
-async def create_task_in_group(group_id: int, payload: TaskCreate, current_user: dict = Depends(get_current_user)):
-    return await creer_tache_dans_groupe(group_id, payload.title, payload.description, payload.assigned_to_id, payload.due_date, current_user)
+async def create_task_in_group(
+    group_id: int,
+    payload: TaskCreate,
+    current_user: dict = Depends(get_current_user)
+):
+
+    return await creer_tache_dans_groupe(
+        group_id=group_id,
+        title=payload.title,
+        description=payload.description,
+        due_date=payload.due_date,
+        current_user=current_user
+    )
 
 @router.delete("/{group_id}/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_task_in_group(group_id: int, task_id: int, current_user: dict = Depends(get_current_user)):

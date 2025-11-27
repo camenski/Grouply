@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <title>Détails de la tâche</title>
+  <link rel="stylesheet" href="/static/css/task.css" />
+</head>
+<body>
+  <header class="topbar">
+    <div class="container">
+      <h1>Grouply</h1>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card" style="max-width:720px; margin:28px auto;">
+      <div class="card-header">
+        <h2>{{ task.title }}</h2>
+        <div class="actions">
+          <a class="btn ghost" href="/tasks">Retour à mes tâches</a>
+        </div>
+      </div>
+
+      <p><strong>Description :</strong> {{ task.description or "Aucune description" }}</p>
+      <p><strong>Statut :</strong> {{ task.status }}</p>
+      <p><strong>Échéance :</strong> {{ task.due_date or "—" }}</p>
+      <p><strong>Créée le :</strong> {{ task.created_at }}</p>
+      <p><strong>Dernière mise à jour :</strong> {{ task.updated_at }}</p>
+
+      {% if task.group_id %}
+        <p><strong>Groupe associé :</strong> {{ task.group_id }}</p>
+      {% else %}
+        <p class="muted">Cette tâche n'est associée à aucun groupe.</p>
+      {% endif %}
+
+      <div class="task-actions">
+        <a class="btn small" href="/tasks/{{ task.id }}/edit">Modifier</a>
+        <form method="post" action="/tasks/{{ task.id }}/delete" style="display:inline">
+          <button class="btn small danger" type="submit">Supprimer</button>
+        </form>
+        <form method="post" action="/tasks/{{ task.id }}/associate" style="display:inline">
+          <select name="group_id">
+            <option value="">Associer à un groupe</option>
+            {% for g in groups %}
+              <option value="{{ g.id }}">{{ g.name }}</option>
+            {% endfor %}
+          </select>
+          <button class="btn small" type="submit">Associer</button>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="container footer">
+    <p class="muted">© Grouply</p>
+  </footer>
+</body>
+</html>
