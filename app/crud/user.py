@@ -9,7 +9,6 @@ from app.storage.json_db import (
 )
 
 async def creer_utilisateur(email: str, password: str, full_name: Optional[str] = None) -> Dict[str, Any]:
-    """Crée un utilisateur (vérifie l'unicité de l'email)."""
     existing = await trouver_utilisateur_par_email(email)
     if existing:
         raise ValueError("Email déjà utilisé")
@@ -28,10 +27,7 @@ async def recuperer_utilisateur_par_email(email: str) -> Optional[Dict[str, Any]
     return await trouver_utilisateur_par_email(email)
 
 async def mettre_a_jour_utilisateur(user_id: int, patch: Dict[str, Any]) -> Dict[str, Any]:
-    """
-    Met à jour un utilisateur. patch peut contenir full_name, is_active, password.
-    Si password est présent, il est haché.
-    """
+
     data = await charger_db()
     for u in data.get("users", []):
         if u.get("id") == user_id:

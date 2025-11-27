@@ -1,131 +1,123 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
+from fastapi import APIRouter, Depends, HTTPException, status,Request,Form
+from typing import Dict, Any, List,Optional
 from fastapi.responses import RedirectResponse
-from fastapi.templating import Jinja2Templates
 from pydantic import BaseModel
-from typing import Optional, Dict, Any, List
-
+from fastapi.templating import Jinja2Templates
+from app.dependencies.auth import get_current_user
+from app.schemas.groupe import GroupCreate,GroupUpdate
+from app.schemas.tache import TaskCreate
 from app.services.groupe import (
     creer_nouveau_groupe,
-    get_groupe,
-    list_all_groupes,
-    update_groupe,
-    delete_groupe,
-    ajouter_membre_au_groupe,
+    modifier_groupe,
+    supprimer_groupe_si_createur,
     retirer_membre_du_groupe,
+    creer_tache_dans_groupe,
+    supprimer_tache_du_groupe,
+    lister_taches_du_groupe,
+    generer_invitation_simple,
+    rejoindre_via_invite_simple,
+    obtenir_groupes_par_utilisateur
 )
-from app.dependencies.auth import get_current_user
+
 
 router = APIRouter(prefix="/groups", tags=["groups"])
 templates = Jinja2Templates(directory="templates")
 
 
-class GroupCreate(BaseModel):
-    name: str
-    description: Optional[str] = None
-    owner_id: Optional[int] = None
+
+class InviteJoin(BaseModel):
+    token: str
 
 
-class GroupPatch(BaseModel):
-    name: Optional[str] = None
-    description: Optional[str] = None
-    owner_id: Optional[int] = None
+@router.get("/list", include_in_schema=False)
+async def list_groups_page(request: Request, current_user: dict = Depends(get_current_user)):
+    raw_id = current_user.get("id")
+    if raw_id is None:
+        raise HTTPException(status_code=400, detail="Utilisateur invalide ou id manquant")
+    try:
+        user_id = int(raw_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Identifiant utilisateur invalide")
 
-
-@router.post("/", response_model=Dict[str, Any], status_code=status.HTTP_201_CREATED)
-async def create_group(payload: GroupCreate, current_user: dict = Depends(get_current_user)):
-    return await creer_nouveau_groupe(payload.name, payload.description, payload.owner_id)
-
-
-@router.get("/", response_model=List[Dict[str, Any]])
-async def list_groups(current_user: dict = Depends(get_current_user)):
-    return await list_all_groupes()
-
-
-@router.get("/{group_id}", response_model=Dict[str, Any])
-async def read_group(group_id: int, current_user: dict = Depends(get_current_user)):
-    return await get_groupe(group_id)
-
-
-@router.patch("/{group_id}", response_model=Dict[str, Any])
-async def patch_group(group_id: int, payload: GroupPatch, current_user: dict = Depends(get_current_user)):
-    return await update_groupe(group_id, payload.dict(exclude_unset=True))
-
-
-@router.delete("/{group_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_group(group_id: int, current_user: dict = Depends(get_current_user)):
-    await delete_groupe(group_id)
-    return {}
-
-
-@router.post("/{group_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def add_member(group_id: int, user_id: int, current_user: dict = Depends(get_current_user)):
-    await ajouter_membre_au_groupe(group_id, user_id)
-    return {}
-
-
-@router.delete("/{group_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
-async def remove_member(group_id: int, user_id: int, current_user: dict = Depends(get_current_user)):
-    await retirer_membre_du_groupe(group_id, user_id)
-    return {}
-
+    groups = await obtenir_groupes_par_utilisateur(user_id)
+    return templates.TemplateResponse("groups_list.html", {"request": request, "user": current_user, "groups": groups})
 
 @router.get("/create", include_in_schema=False)
 async def create_group_page(request: Request, current_user: dict = Depends(get_current_user)):
-
-    return templates.TemplateResponse(
-        "groups_create.html",
-        {"request": request, "user": current_user, "message": None, "form": {}},
-    )
-
+    return templates.TemplateResponse("group_create.html", {"request": request, "user": current_user})
 
 @router.post("/create", include_in_schema=False)
 async def create_group_from_form(
     request: Request,
     name: str = Form(...),
     description: Optional[str] = Form(None),
-    owner_id: Optional[str] = Form(None),
     current_user: dict = Depends(get_current_user),
 ):
+    new_group = await creer_nouveau_groupe(name, description, None, current_user)
+    return RedirectResponse(url=f"/groups/{new_group['id']}", status_code=303)
 
+@router.get("/{group_id}", include_in_schema=False)
+async def group_detail_page(group_id: int, request: Request, current_user: dict = Depends(get_current_user)):
+    group = await modifier_groupe(group_id, {}, current_user)  # récupération simple
+    tasks = await lister_taches_du_groupe(group_id, current_user)
+    return templates.TemplateResponse("group_detail.html", {"request": request, "user": current_user, "group": group, "tasks": tasks})
+
+@router.get("/{group_id}/invite", include_in_schema=False)
+async def group_invite_page(group_id: int, request: Request, current_user: dict = Depends(get_current_user)):
+    invite = await generer_invitation_simple(group_id, current_user)
+    return templates.TemplateResponse("group_invite.html", {"request": request, "user": current_user, "invite": invite})
+
+
+@router.post("/", response_model=Dict[str, Any])
+async def create_group(payload: GroupCreate, current_user: dict = Depends(get_current_user)):
+    return await creer_nouveau_groupe(payload.name, payload.description, payload.owner_id, current_user)
+
+@router.patch("/{group_id}", response_model=Dict[str, Any])
+async def update_group(group_id: int, payload: GroupUpdate, current_user: dict = Depends(get_current_user)):
+    return await modifier_groupe(group_id, payload.dict(exclude_unset=True), current_user)
+
+@router.delete("/{group_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_group(group_id: int, current_user: dict = Depends(get_current_user)):
+    await supprimer_groupe_si_createur(group_id, current_user)
+    return {}
+
+@router.delete("/{group_id}/members/{user_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def remove_member(group_id: int, user_id: int, current_user: dict = Depends(get_current_user)):
+    await retirer_membre_du_groupe(group_id, user_id, current_user)
+    return {}
+
+@router.post("/{group_id}/tasks", response_model=Dict[str, Any])
+async def create_task_in_group(group_id: int, payload: TaskCreate, current_user: dict = Depends(get_current_user)):
+    return await creer_tache_dans_groupe(group_id, payload.title, payload.description, payload.assigned_to_id, payload.due_date, current_user)
+
+@router.delete("/{group_id}/tasks/{task_id}", status_code=status.HTTP_204_NO_CONTENT)
+async def delete_task_in_group(group_id: int, task_id: int, current_user: dict = Depends(get_current_user)):
+    await supprimer_tache_du_groupe(group_id, task_id, current_user)
+    return {}
+
+@router.get("/{group_id}/tasks", response_model=List[Dict[str, Any]])
+async def list_tasks_in_group(group_id: int, current_user: dict = Depends(get_current_user)):
+    return await lister_taches_du_groupe(group_id, current_user)
+
+@router.post("/{group_id}/invite", response_model=Dict[str, Any])
+async def create_invite(group_id: int, current_user: dict = Depends(get_current_user)):
+    return await generer_invitation_simple(group_id, current_user)
+
+@router.post("/invite/join", response_model=Dict[str, Any])
+async def join_group_via_invite(payload: InviteJoin, current_user: dict = Depends(get_current_user)):
+    result = await rejoindre_via_invite_simple(payload.token, current_user)
+    if result.get("status") != "joined":
+        raise HTTPException(status_code=400, detail=result.get("reason", "Erreur"))
+    return result
+
+@router.get("/my-groups", response_model=List[Dict[str, Any]])
+async def list_my_groups(current_user: dict = Depends(get_current_user)):
+    raw_id = current_user.get("id")
+    if raw_id is None:
+        raise HTTPException(status_code=400, detail="Utilisateur invalide ou id manquant")
     try:
-        owner = int(owner_id) if owner_id not in (None, "", "None") else None
-    except ValueError:
-        owner = None
+        user_id = int(raw_id)
+    except (ValueError, TypeError):
+        raise HTTPException(status_code=400, detail="Identifiant utilisateur invalide")
 
-    try:
-        new_group = await creer_nouveau_groupe(name=name, description=description, owner_id=owner)
-    except Exception as exc:
-        message = str(exc) or "Une erreur est survenue lors de la création du groupe."
-        form = {"name": name, "description": description, "owner_id": owner_id}
-        return templates.TemplateResponse(
-            "groups_create.html",
-            {"request": request, "message": message, "form": form, "user": current_user},
-            status_code=400,
-        )
-
-    group_id = new_group.get("id") if isinstance(new_group, dict) else None
-    if group_id:
-        return RedirectResponse(url=f"/groups/{group_id}", status_code=303)
-    return RedirectResponse(url="/groups/", status_code=303)
-
-
-@router.get("/success", include_in_schema=False)
-async def group_created_success(request: Request, current_user: dict = Depends(get_current_user)):
-
-    return templates.TemplateResponse(
-        "groups_success.html",
-        {"request": request, "user": current_user},
-    )
-
-
-@router.get("/list", include_in_schema=False)
-async def groups_list_page(request: Request, current_user: dict = Depends(get_current_user)):
-
-    try:
-        groupes = await list_all_groupes()
-    except Exception:
-        groupes = []
-    return templates.TemplateResponse(
-        "groups_index.html",
-        {"request": request, "user": current_user, "groups": groupes},
-    )
+    return await obtenir_groupes_par_utilisateur(user_id)

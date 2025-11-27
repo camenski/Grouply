@@ -1,4 +1,3 @@
-# app/models/task.py
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, Enum
 from sqlalchemy.orm import relationship
@@ -20,7 +19,7 @@ class Task(Base):
 
     due_date = Column(DateTime, nullable=True)
 
-    # relations
+    
     assigned_to_id = Column(Integer, ForeignKey("users.id", ondelete="SET NULL"), nullable=True)
     group_id = Column(Integer, ForeignKey("groups.id", ondelete="CASCADE"), nullable=True)
 

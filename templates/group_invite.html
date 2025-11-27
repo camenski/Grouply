@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invitation au groupe</title>
+</head>
+<body>
+    <h1>Invitation générée</h1>
+    <p>Voici votre lien d'invitation :</p>
+    <p><a href="{{ invite.url }}">{{ invite.url }}</a></p>
+    <p>Expire le : {{ invite.expires_at }}</p>
+</body>
+</html>

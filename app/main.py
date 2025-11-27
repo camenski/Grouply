@@ -70,6 +70,7 @@ async def register_post(
 async def login_page(request: Request):
     return templates.TemplateResponse("login.html", {"request": request, "message": None})
 
+
 def custom_openapi():
     if app.openapi_schema:
         return app.openapi_schema

@@ -1,4 +1,3 @@
-# app/models/user.py
 from datetime import datetime
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Text
 from sqlalchemy.orm import relationship
@@ -15,8 +14,6 @@ class User(Base):
 
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow, nullable=False)
-
-    # relations
     owned_groups = relationship("Group", back_populates="owner", cascade="all, delete-orphan")
     groups = relationship("Group", secondary="groups_users", back_populates="members")
     tasks = relationship("Task", back_populates="assigned_to", cascade="all, delete-orphan")

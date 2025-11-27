@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Dict, Any, List, Optional
 from pathlib import Path
 import json
@@ -70,10 +71,7 @@ async def retirer_membre(group_id: int, user_id: int) -> None:
     raise KeyError("Groupe introuvable")
 
 async def lister_groupes_par_utilisateur(user_id: int) -> List[Dict[str, Any]]:
-    """
-    Retourne la liste brute des groupes dont user_id est membre.
-    Cherche d'abord un helper de stockage, sinon lit un fichier JSON.
-    """
+
     try:
         db = await charger_db()
         groupes = db.get("groups") or db.get("groupes") or db.get("groups_list") or []
@@ -110,3 +108,51 @@ async def lister_groupes_par_utilisateur(user_id: int) -> List[Dict[str, Any]]:
                 result.append(g_copy)
 
     return result
+
+
+
+async def creer_invitation(group_id: int, token: str, created_by: Optional[int], expires_at: Optional[str]) -> Dict[str, Any]:
+
+    data = await charger_db()
+    invite = {
+        "id": len(data.get("invites", [])) + 1,
+        "group_id": group_id,
+        "token": token,
+        "created_by": created_by,
+        "created_at": datetime.now().isoformat(),
+        "expires_at": expires_at,
+        "uses_count": 0,
+        "max_uses": 1,
+        "is_active": True,
+    }
+    data.setdefault("invites", []).append(invite)
+    await sauvegarder_db(data)
+    return invite
+
+
+async def obtenir_invitation_par_token(token: str) -> Optional[Dict[str, Any]]:
+
+    data = await charger_db()
+    for inv in data.get("invites", []):
+        if inv.get("token") == token:
+            return inv
+    return None
+
+
+async def incrementer_utilisation_invite(token: str) -> bool:
+
+    data = await charger_db()
+    invites = data.get("invites", [])
+    for inv in invites:
+        if inv.get("token") == token:
+            inv["uses_count"] = inv.get("uses_count", 0) + 1
+            if inv["uses_count"] >= inv.get("max_uses", 1):
+                inv["is_active"] = False
+            await sauvegarder_db(data)
+            return True
+    return False
+
+
+
+
+

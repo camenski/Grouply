@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Détails du groupe</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>{{ group.name }}</h1>
+    <p>{{ group.description }}</p>
+    <p>Créé par : {{ group.owner_id }}</p>
+
+    <h2>Membres</h2>
+    <ul>
+        {% for member in group.members %}
+            <li>{{ member }}</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Tâches du groupe</h2>
+    <ul>
+        {% for task in tasks %}
+            <li>{{ task.title }} - {{ task.status }}</li>
+        {% endfor %}
+    </ul>
+
+    <p><a href="/groups/{{ group.id }}/invite">Générer un lien d'invitation</a></p>
+    <p><a href="/groups/{{ group.id }}/tasks">Créer une tâche</a></p>
+</body>
+</html>

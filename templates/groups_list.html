@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mes groupes</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+    <h1>Mes groupes</h1>
+    <p><a href="/groups/create">Créer un nouveau groupe</a></p>
+
+    <ul>
+        {% for group in groups %}
+            <li>
+                <strong>{{ group.name }}</strong> - {{ group.description or "Pas de description" }}
+                ({{ group.member_count }} membres)
+                <a href="/groups/{{ group.id }}">Voir</a>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

@@ -1,4 +1,3 @@
-# app/models/group.py
 from datetime import datetime
 from sqlalchemy import Table, Column, Integer, String, DateTime, ForeignKey, Text
 from sqlalchemy.orm import relationship

@@ -1,4 +1,3 @@
-# app/services/user_service.py
 from typing import Dict, Any, Optional
 from fastapi import HTTPException, status
 

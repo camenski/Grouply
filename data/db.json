@@ -94,6 +94,20 @@
       "full_name": "pat",
       "is_active": true,
       "id": 7
+    },
+    {
+      "email": "mk@gmail.com",
+      "hashed_password": "$2b$12$7WK5eynGj63cF3bcuira2eJTzIDdqSZGv4WhjQBflZn4d3Y.q4Shi",
+      "full_name": "mk",
+      "is_active": true,
+      "id": 7
+    },
+    {
+      "email": "br@gmail.com",
+      "hashed_password": "$2b$12$EgGEaXDmaKrObQlW44hY1.llrZJ8jquH./SZy4U6onwvrSaPvby7q",
+      "full_name": "br",
+      "is_active": true,
+      "id": 8
     }
   ],
   "groups": [

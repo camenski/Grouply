@@ -44,10 +44,19 @@ async def sauvegarder_db(data: Dict[str, Any]) -> None:
 
 async def obtenir_prochain_id(kind: str) -> int:
     data = await charger_db()
+    objets = data.get(kind, [])
+    used_ids = {obj.get("id") for obj in objets if obj.get("id") is not None}
+
     nid = data.setdefault("next_ids", {}).get(kind, 1)
+
+    while nid in used_ids:
+        nid += 1
+
     data["next_ids"][kind] = nid + 1
     await sauvegarder_db(data)
-    return nid+1
+
+    return nid
+
 
 async def trouver_utilisateur_par_email(email: str) -> Optional[Dict[str, Any]]:
     data = await charger_db()
