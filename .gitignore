@@ -1,0 +1,15 @@
+# Environnements virtuels
+.venv/
+venv/
+env/
+
+# Fichiers Python compilés
+__pycache__/
+*.pyc
+
+
+# Fichiers temporaires
+*.log
+
+# Fichiers de données (si tu veux)
+data/db.json
