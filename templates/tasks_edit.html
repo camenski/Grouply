@@ -40,14 +40,6 @@
           <option value="done" {% if task.status == "done" %}selected{% endif %}>Terminée</option>
         </select>
 
-        <label for="group_id">Associer à un groupe (optionnel)</label>
-        <select id="group_id" name="group_id">
-          <option value="">— Aucun —</option>
-          {% for g in groups %}
-            <option value="{{ g.id }}" {% if task.group_id == g.id %}selected{% endif %}>{{ g.name }}</option>
-          {% endfor %}
-        </select>
-
         <label for="due_date">Échéance</label>
         <input id="due_date" name="due_date" type="date" value="{{ task.due_date }}" />
 

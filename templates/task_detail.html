@@ -28,7 +28,13 @@
       <p><strong>Dernière mise à jour :</strong> {{ task.updated_at }}</p>
 
       {% if task.group_id %}
-        <p><strong>Groupe associé :</strong> {{ task.group_id }}</p>
+        <p><strong>Groupe associé :</strong>
+          {% for g in groups %}
+            {% if g.id == task.group_id %}
+              {{ g.name }}
+            {% endif %}
+          {% endfor %}
+        </p>
       {% else %}
         <p class="muted">Cette tâche n'est associée à aucun groupe.</p>
       {% endif %}
@@ -38,16 +44,11 @@
         <form method="post" action="/tasks/{{ task.id }}/delete" style="display:inline">
           <button class="btn small danger" type="submit">Supprimer</button>
         </form>
-        <form method="post" action="/tasks/{{ task.id }}/associate" style="display:inline">
-          <select name="group_id">
-            <option value="">Associer à un groupe</option>
-            {% for g in groups %}
-              <option value="{{ g.id }}">{{ g.name }}</option>
-            {% endfor %}
-          </select>
-          <button class="btn small" type="submit">Associer</button>
-        </form>
       </div>
+
+      {% if message %}
+        <p class="success">{{ message }}</p>
+      {% endif %}
     </section>
   </main>
 
