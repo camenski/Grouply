@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/static/css/.css" />
+    <meta charset="UTF-8">
+    <title>Rejoindre un groupe</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f4f4f9; }
+        .card { border: 1px solid #ccc; padding: 1.5em; border-radius: 8px; background: #fff; max-width: 600px; margin: auto; }
+        h2 { margin-top: 0; }
+        input { width: 100%; padding: 0.5em; margin-top: 0.5em; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { padding: 0.6em 1.2em; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 0.5em; }
+        .btn:hover { background: #0056b3; }
+        .muted { color: #666; font-size: 0.9em; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>Invitation pour rejoindre le groupe {{ invite.invite.group_id }}</h2>
+
+        {% if user %}
+            <!-- Utilisateur connecté -->
+            <form method="post" action="/groups/invite/join">
+                <input type="hidden" name="token" value="{{ invite.invite.token }}">
+                <button class="btn" type="submit">Rejoindre le groupe</button>
+            </form>
+        {% else %}
+            <!-- Utilisateur non connecté : formulaire d'inscription -->
+            <form method="post" action="/groups/invite/register">
+                <input type="hidden" name="token" value="{{ invite.invite.token }}">
+                <label>Email :</label>
+                <input type="email" name="email" required>
+
+                <label>Nom complet :</label>
+                <input type="text" name="full_name" required>
+
+                <label>Mot de passe :</label>
+                <input type="password" name="password" required>
+
+                <button class="btn" type="submit">S'inscrire et rejoindre</button>
+            </form>
+        {% endif %}
+
+        {% if message %}
+            <p class="muted"><strong>{{ message }}</strong></p>
+        {% endif %}
+    </div>
+</body>
+</html>

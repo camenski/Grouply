@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="/static/css/.css" />
+    <meta charset="UTF-8">
+    <title>Groupe {{ group.name }}</title>
+</head>
+<body>
+    <h2>Bienvenue dans le groupe {{ group.name }}</h2>
+    <p><strong>Description :</strong> {{ group.description }}</p>
+    <h3>Membres :</h3>
+    <ul>
+        {% for membre in membres %}
+            <li>👤 {{ membre }}</li>
+        {% endfor %}
+    </ul>
+</body>
+</html>

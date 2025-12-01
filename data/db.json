@@ -115,6 +115,27 @@
       "full_name": "bim",
       "is_active": true,
       "id": 9
+    },
+    {
+      "email": "alex@gmail.com",
+      "hashed_password": "$2b$12$FYWI58oZJ6h.t.pRea7IMOJQyCbDb8JJJDzuHUPcvYvq0Yu4IB91.",
+      "full_name": "alex",
+      "is_active": true,
+      "id": 10
+    },
+    {
+      "email": "hel@gmail.com",
+      "hashed_password": "$2b$12$QM43jZ07YVPxByEH.qpPa.8xZw.wlZDDOdYs5xyVSms9R37LUTqcm",
+      "full_name": "hel",
+      "is_active": true,
+      "id": 11
+    },
+    {
+      "email": "mop@gmail.com",
+      "hashed_password": "$2b$12$V7wpxKznTygub88lo9y9nexODMgOSsKhog.i3gq8hlhFnHkO.1n62",
+      "full_name": "mop",
+      "is_active": true,
+      "id": 12
     }
   ],
   "groups": [
@@ -178,7 +199,9 @@
       "description": "knsvdn",
       "owner_id": 9,
       "members": [
-        9
+        9,
+        11,
+        12
       ],
       "tasks": []
     }
@@ -317,6 +340,94 @@
       "uses_count": 0,
       "max_uses": 1,
       "is_active": true
+    },
+    {
+      "id": 6,
+      "group_id": 8,
+      "token": "_V__edQiFCBOZD6QSUG5rQ",
+      "created_by": 9,
+      "created_at": "2025-12-01T10:19:18.229675",
+      "expires_at": "2025-12-08T10:19:18.228710",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 7,
+      "group_id": 8,
+      "token": "Wb4s6CXo8FfuslAYyob8bw",
+      "created_by": 9,
+      "created_at": "2025-12-01T13:53:08.423834",
+      "expires_at": "2025-12-08T13:53:08.422931",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 8,
+      "group_id": 8,
+      "token": "VZi64fEgJ72OykWnCFzs-w",
+      "created_by": 9,
+      "created_at": "2025-12-01T13:54:03.141179",
+      "expires_at": "2025-12-08T13:54:03.140762",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 9,
+      "group_id": 8,
+      "token": "9WnF-mH0ZC0P0Agviy9O-w",
+      "created_by": 9,
+      "created_at": "2025-12-01T13:59:48.106358",
+      "expires_at": "2025-12-08T13:59:48.105818",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 10,
+      "group_id": 8,
+      "token": "gkPLeFZZLd9BT5gggkjcRg",
+      "created_by": 9,
+      "created_at": "2025-12-01T14:23:41.640043",
+      "expires_at": "2025-12-08T14:23:41.639510",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 11,
+      "group_id": 8,
+      "token": "XB5zOK48THsoFs9tI5coGg",
+      "created_by": 9,
+      "created_at": "2025-12-01T15:30:36.671826",
+      "expires_at": "2025-12-08T15:30:36.670592",
+      "uses_count": 0,
+      "max_uses": 1,
+      "is_active": true
+    },
+    {
+      "id": 12,
+      "group_id": 8,
+      "token": "zfPINOTeUnabzzXTSV3D6w",
+      "created_by": 9,
+      "created_at": "2025-12-01T15:30:49.141475",
+      "expires_at": "2025-12-08T15:30:49.140962",
+      "uses_count": 1,
+      "max_uses": 1,
+      "is_active": false
+    },
+    {
+      "id": 13,
+      "group_id": 8,
+      "token": "frD_FmFdWzQsOL7yqU5dEQ",
+      "created_by": 9,
+      "created_at": "2025-12-01T16:17:15.945784",
+      "expires_at": "2025-12-08T16:17:15.944554",
+      "uses_count": 1,
+      "max_uses": 1,
+      "is_active": false
     }
   ],
   "next_ids": {

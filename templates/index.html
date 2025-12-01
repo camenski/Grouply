@@ -109,9 +109,7 @@
                 <a class="btn small" href="/groups/{{ g.id }}">Voir</a>
                 {% if g.owner_id == user.id %}
                   <a class="btn small" href="/groups/{{ g.id }}/manage">Gérer membres</a>
-                  <form method="post" action="/groups/{{ g.id }}/invite" style="display:inline">
-                    <button class="btn small" type="submit">Générer lien d'invitation</button>
-                  </form>
+                  <a class="btn small" href="/groups/{{ g.id }}/invite">Générer lien d'invitation</a>
                 {% endif %}
               </div>
             </li>

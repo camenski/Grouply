@@ -1,15 +1,45 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="/static/css/groupe_invite.css">
-    <title>Invitation au groupe</title>
+    <link rel="stylesheet" href="/static/css/groupe_invite.css" />
+    <meta charset="UTF-8">
+    <title>Lien d’invitation</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 2em; background: #f4f4f9; }
+        .card { border: 1px solid #ccc; padding: 1.5em; border-radius: 8px; background: #fff; max-width: 600px; margin: auto; }
+        h2 { margin-top: 0; }
+        input { width: 100%; padding: 0.5em; margin-top: 0.5em; border: 1px solid #ccc; border-radius: 4px; }
+        .btn { padding: 0.6em 1.2em; background: #007BFF; color: white; border: none; border-radius: 4px; cursor: pointer; margin-top: 0.5em; text-decoration: none; display: inline-block; }
+        .btn:hover { background: #0056b3; }
+        .muted { color: #666; font-size: 0.9em; }
+        .actions { margin-top: 1em; display: flex; gap: 10px; }
+    </style>
 </head>
 <body>
-    <h1>Invitation générée</h1>
-    <p>Voici votre lien d'invitation :</p>
-    <p><a href="{{ invite.url }}">{{ invite.url }}</a></p>
-    <p>Expire le : {{ invite.expires_at }}</p>
+    <div class="card">
+        <h2>Invitation générée pour le groupe {{ invite.invite.group_id }}</h2>
+
+        <label for="inviteLink">Lien d’invitation :</label>
+        <input type="text" id="inviteLink" value="{{ invite.url }}" readonly>
+        <button class="btn" onclick="copyLink()">Copier le lien</button>
+
+        <p class="muted"><strong>Expire le :</strong> {{ invite.invite.expires_at }}</p>
+        <p class="muted"><strong>Utilisations :</strong> {{ invite.invite.uses_count }} / {{ invite.invite.max_uses }}</p>
+        <p class="muted"><strong>Créé par :</strong> Utilisateur #{{ invite.invite.created_by }}</p>
+
+        <div class="actions">
+            <a class="btn" href="/groups/{{ invite.invite.group_id }}">Retour au groupe</a>
+        </div>
+    </div>
+
+    <script>
+    function copyLink() {
+        const link = document.getElementById("inviteLink");
+        link.select();
+        document.execCommand("copy");
+        alert("Lien copié dans le presse-papiers !");
+    }
+    </script>
 </body>
 </html>

@@ -3,6 +3,7 @@ from fastapi import Request, HTTPException, status, Depends
 from app.core.security import decoder_access_token 
 from app.services.auth import recuperer_profil
 import json
+from fastapi import Request
 
 async def get_token_from_request(request: Request) -> Optional[str]:
 
@@ -43,3 +44,11 @@ async def get_current_user(request: Request) -> Dict[str, Any]:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Utilisateur introuvable")
 
     return user
+
+
+
+async def get_current_user_optional(request: Request):
+    try:
+        return await get_current_user(request)
+    except Exception:
+        return None

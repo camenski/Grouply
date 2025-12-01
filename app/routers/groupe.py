@@ -1,12 +1,15 @@
-from fastapi import APIRouter, Depends, HTTPException, status,Request,Form
-from typing import Dict, Any, List,Optional
-from fastapi.responses import RedirectResponse
+from fastapi import APIRouter, Depends, HTTPException, status, Request, Form
+from fastapi.responses import RedirectResponse, HTMLResponse
+from typing import Dict, Any, List, Optional
 from pydantic import BaseModel
 from fastapi.templating import Jinja2Templates
-from app.dependencies.auth import get_current_user
-from app.schemas.groupe import GroupCreate,GroupUpdate
+from app.dependencies.auth import get_current_user, get_current_user_optional
+from app.schemas.groupe import GroupCreate, GroupUpdate
 from app.schemas.tache import TaskCreate
-from app.crud.user import recuperer_utilisateur_par_id
+from datetime import timedelta
+from app.crud.user import recuperer_utilisateur_par_id, creer_utilisateur
+from app.core.security import creer_access_token
+from app.crud.groupe import obtenir_invitation_par_token
 from app.services.groupe import (
     creer_nouveau_groupe,
     modifier_groupe,
@@ -20,15 +23,13 @@ from app.services.groupe import (
     obtenir_groupes_par_utilisateur
 )
 
-
 router = APIRouter(prefix="/groups", tags=["groups"])
 templates = Jinja2Templates(directory="templates")
 
-
+COOKIE_MAX_AGE = int(timedelta(minutes=30).total_seconds())
 
 class InviteJoin(BaseModel):
     token: str
-
 
 @router.get("/list", include_in_schema=False)
 async def list_groups_page(request: Request, current_user: dict = Depends(get_current_user)):
@@ -89,12 +90,76 @@ async def group_detail_page(
 
     return templates.TemplateResponse("group_detail.html", context)
 
-
 @router.get("/{group_id}/invite", include_in_schema=False)
 async def group_invite_page(group_id: int, request: Request, current_user: dict = Depends(get_current_user)):
     invite = await generer_invitation_simple(group_id, current_user)
     return templates.TemplateResponse("group_invite.html", {"request": request, "user": current_user, "invite": invite})
 
+@router.post("/{group_id}/invite", response_model=Dict[str, Any])
+async def create_invite(group_id: int, current_user: dict = Depends(get_current_user)):
+    return await generer_invitation_simple(group_id, current_user)
+
+@router.get("/invite/{token}", response_class=HTMLResponse, include_in_schema=False)
+async def invite_page(token: str, request: Request, current_user: dict = Depends(get_current_user_optional)):
+    invite = await obtenir_invitation_par_token(token)
+    if not invite:
+        raise HTTPException(status_code=404, detail="Invitation introuvable")
+
+    return templates.TemplateResponse(
+        "invite_join.html",
+        {"request": request, "invite": invite, "user": current_user}
+    )
+
+
+@router.post("/invite/join", response_model=Dict[str, Any])
+async def join_group_via_invite(payload: InviteJoin, current_user: dict = Depends(get_current_user)):
+    result = await rejoindre_via_invite_simple(payload.token, current_user)
+    if result.get("status") != "joined":
+        raise HTTPException(status_code=400, detail=result.get("reason", "Erreur"))
+    return RedirectResponse(url=f"/groups/{result['group_id']}", status_code=303)
+
+@router.post("/invite/register", include_in_schema=False)
+async def register_with_invite(
+    request: Request,
+    email: str = Form(...),
+    password: str = Form(...),
+    full_name: str = Form(...),
+    token: str = Form(...)
+):
+    if len(password) < 8:
+        return templates.TemplateResponse(
+            "invite_join.html",
+            {"request": request, "invite": {"token": token}, "message": "Le mot de passe doit contenir au moins 8 caractères."}
+        )
+
+    try:
+        new_user = await creer_utilisateur(email=email, password=password, full_name=full_name)
+    except Exception as e:
+        return templates.TemplateResponse(
+            "invite_join.html",
+            {"request": request, "invite": {"token": token}, "message": str(e)}
+        )
+
+    token_str = creer_access_token({"id": new_user["id"], "email": new_user["email"]})
+
+    join_result = await rejoindre_via_invite_simple(token, {"id": new_user["id"]})
+    if join_result.get("status") != "joined":
+        return templates.TemplateResponse(
+            "invite_join.html",
+            {"request": request, "invite": {"token": token}, "message": join_result.get("reason", "Erreur")}
+        )
+
+    response = RedirectResponse(url=f"/groups/{join_result['group_id']}", status_code=303)
+    response.set_cookie(
+        key="access_token",
+        value=token_str,
+        httponly=True,
+        max_age=COOKIE_MAX_AGE,
+        path="/",
+        samesite="lax",
+        secure=False
+    )
+    return response
 
 @router.post("/", response_model=Dict[str, Any])
 async def create_group(payload: GroupCreate, current_user: dict = Depends(get_current_user)):
@@ -120,7 +185,6 @@ async def create_task_in_group(
     payload: TaskCreate,
     current_user: dict = Depends(get_current_user)
 ):
-
     return await creer_tache_dans_groupe(
         group_id=group_id,
         title=payload.title,
@@ -137,17 +201,6 @@ async def delete_task_in_group(group_id: int, task_id: int, current_user: dict =
 @router.get("/{group_id}/tasks", response_model=List[Dict[str, Any]])
 async def list_tasks_in_group(group_id: int, current_user: dict = Depends(get_current_user)):
     return await lister_taches_du_groupe(group_id, current_user)
-
-@router.post("/{group_id}/invite", response_model=Dict[str, Any])
-async def create_invite(group_id: int, current_user: dict = Depends(get_current_user)):
-    return await generer_invitation_simple(group_id, current_user)
-
-@router.post("/invite/join", response_model=Dict[str, Any])
-async def join_group_via_invite(payload: InviteJoin, current_user: dict = Depends(get_current_user)):
-    result = await rejoindre_via_invite_simple(payload.token, current_user)
-    if result.get("status") != "joined":
-        raise HTTPException(status_code=400, detail=result.get("reason", "Erreur"))
-    return result
 
 @router.get("/my-groups", response_model=List[Dict[str, Any]])
 async def list_my_groups(current_user: dict = Depends(get_current_user)):
