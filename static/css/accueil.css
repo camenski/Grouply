@@ -1,46 +1,269 @@
-.auth-grid{
-    display:flex;
-    justify-content:center;
-    padding: 0 16px;
-  }
-  .auth-card{
-    text-align:center;
-    padding:36px;
-    max-width:420px;
-    width:100%;
-    border-radius:12px;
-    background:var(--card, #fff);
-    box-shadow:var(--shadow, 0 8px 24px rgba(16,24,40,0.06));
-    border:1px solid rgba(15,23,42,0.03);
-  }
-  .btn-group{
-    display:flex;
-    gap:14px;
-    justify-content:center;
-    margin-top:20px;
-  }
-  .btn{
-    display:inline-block;
-    padding:10px 16px;
-    border-radius:10px;
-    font-weight:600;
-    text-decoration:none;
-    cursor:pointer;
-    transition:transform .08s ease, box-shadow .12s ease;
-  }
-  .btn.primary{
-    background:var(--primary, #2563eb);
-    color:#fff;
-  }
-  .btn.secondary{
-    background:transparent;
-    color:var(--primary, #2563eb);
-    border:1px solid rgba(37,99,235,0.12);
-  }
-  .btn:hover{ transform:translateY(-2px); box-shadow:0 8px 24px rgba(16,24,40,0.06); }
-  
-  @media (max-width:520px){
-    .btn-group{ flex-direction:column; gap:10px; }
-    .btn{ width:100%; text-align:center; }
+
+   * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
   }
   
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    position: relative;
+    overflow: hidden;
+  }
+  
+  body::before {
+    content: '';
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    background-image: 
+      radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+      radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px, 80px 80px;
+    animation: particlesMove 20s linear infinite;
+    pointer-events: none;
+  }
+  
+  @keyframes particlesMove {
+    0% { transform: translate(0, 0); }
+    100% { transform: translate(-50px, -50px); }
+  }
+  
+
+  .auth-grid {
+    width: 100%;
+    max-width: 480px;
+    animation: fadeInUp 0.8s ease-out;
+  }
+  
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+
+  .card {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 24px;
+    padding: 48px 36px;
+    text-align: center;
+    box-shadow: 
+      0 20px 60px rgba(0, 0, 0, 0.3),
+      0 0 0 1px rgba(255, 255, 255, 0.2) inset;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+  
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.1) 0%, transparent 70%);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    pointer-events: none;
+  }
+  
+  .card:hover::before {
+    opacity: 1;
+  }
+  
+  .card:hover {
+    transform: translateY(-8px);
+    box-shadow: 
+      0 30px 80px rgba(0, 0, 0, 0.35),
+      0 0 0 1px rgba(255, 255, 255, 0.3) inset;
+  }
+  
+
+  h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 12px;
+    animation: titleSlide 0.8s ease-out 0.2s both;
+  }
+  
+  @keyframes titleSlide {
+    from {
+      opacity: 0;
+      transform: translateX(-20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+  
+  .muted {
+    color: #64748b;
+    font-size: 1rem;
+    line-height: 1.6;
+    margin-bottom: 0;
+    animation: fadeIn 0.8s ease-out 0.4s both;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 32px;
+    font-size: 1rem;
+    font-weight: 600;
+    text-decoration: none;
+    border-radius: 12px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    border: none;
+    min-width: 140px;
+  }
+  
+  .btn:first-child {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  }
+  
+  .btn:first-child::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    transition: left 0.5s;
+  }
+  
+  .btn:first-child:hover::before {
+    left: 100%;
+  }
+  
+  .btn:first-child:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.5);
+  }
+  
+  .btn:first-child:active {
+    transform: translateY(0);
+  }
+  
+  .btn:last-child {
+    background: white;
+    color: #667eea;
+    border: 2px solid #667eea;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.2);
+  }
+  
+  .btn:last-child:hover {
+    background: #667eea;
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+  }
+  
+  .btn:last-child:active {
+    transform: translateY(0);
+  }
+  
+  div[style*="display:flex"] {
+    display: flex !important;
+    gap: 14px !important;
+    justify-content: center !important;
+    margin-top: 32px !important;
+    flex-wrap: wrap;
+    animation: fadeIn 0.8s ease-out 0.6s both;
+  }
+
+  @media (max-width: 768px) {
+    .card {
+      padding: 40px 28px;
+      border-radius: 20px;
+    }
+    
+    h2 {
+      font-size: 1.75rem;
+    }
+    
+    .muted {
+      font-size: 0.95rem;
+    }
+    
+    .btn {
+      padding: 12px 28px;
+      font-size: 0.95rem;
+      min-width: 130px;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    body {
+      padding: 16px;
+    }
+    
+    .auth-grid {
+      max-width: 100%;
+    }
+    
+    .card {
+      padding: 32px 24px;
+      border-radius: 16px;
+    }
+    
+    h2 {
+      font-size: 1.5rem;
+    }
+    
+    .muted {
+      font-size: 0.9rem;
+    }
+    
+    div[style*="display:flex"] {
+      flex-direction: column;
+      gap: 12px !important;
+    }
+    
+    .btn {
+      width: 100%;
+      padding: 14px 24px;
+      font-size: 1rem;
+    }
+  }
+  
+  @media (max-width: 360px) {
+    .card {
+      padding: 28px 20px;
+    }
+    
+    h2 {
+      font-size: 1.35rem;
+    }
+  }
